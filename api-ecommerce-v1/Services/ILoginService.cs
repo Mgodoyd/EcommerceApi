@@ -4,7 +4,7 @@ namespace api_ecommerce_v1.Services
 {
     public interface ILoginService
     {
-        string Authenticate(Login user);
+        string Authenticate(Login user, string plainPassword);
 
     }
 }

@@ -14,17 +14,22 @@ namespace api_ecommerce_v1.Controllers
         {
             _loginService = loginService;
         }
-
         [HttpPost("login")]
-        public IActionResult Login([FromBody] Login requestData )
+        public IActionResult Login([FromBody] Login requestData)
         {
             if (requestData == null)
             {
                 return BadRequest("Los datos de inicio de sesión no pueden estar vacíos.");
             }
 
+            // Verifica si el cuerpo de la solicitud contiene la contraseña en texto plano
+            if (string.IsNullOrWhiteSpace(requestData.password))
+            {
+                return BadRequest("La contraseña no puede estar vacía.");
+            }
+
             // Utiliza el servicio LoginService para autenticar al usuario y obtener un token JWT
-            var token = _loginService.Authenticate(requestData);
+            var token = _loginService.Authenticate(requestData, requestData.password);
 
             if (token == null)
             {
@@ -39,5 +44,6 @@ namespace api_ecommerce_v1.Controllers
                 token = token
             });
         }
+
     }
 }

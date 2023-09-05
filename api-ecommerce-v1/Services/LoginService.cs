@@ -3,8 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using api_ecommerce_v1.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace api_ecommerce_v1.Services
@@ -19,36 +17,30 @@ namespace api_ecommerce_v1.Services
             _configuration = configuration;
             _dbContext = dbContext;
         }
-        public string Authenticate(Login user)
+        public string Authenticate(Login user, string plainPassword)
         {
             // Buscar el usuario en la base de datos por correo electrónico
-            var existingUser = _dbContext.Login
-                .Include(u => u.Admin) // Incluye la relación con Admin
-                .Include(u => u.Cliente) // Incluye la relación con Cliente
-                .FirstOrDefault(u => u.email == user.email && u.password == user.password);
+            var existingUser = _dbContext.Login.FirstOrDefault(u => u.email == user.email);
 
+            // Verificar si el usuario existe
             if (existingUser != null)
             {
-                string rol = "Cliente"; // Asume "Cliente" por defecto
-
-                if (existingUser.Admin != null)
+                // Verificar la contraseña encriptada
+                if (BCrypt.Net.BCrypt.Verify(plainPassword, existingUser.password))
                 {
-                    // Si el usuario tiene un registro en la tabla Admin, asigna el rol de administrador
-                    rol = "Admin";
+                    // Autenticación exitosa
+                    return GenerateJwtToken(existingUser);
                 }
+            }
 
-                // Autenticación exitosa
-                return GenerateJwtToken(existingUser, rol);
-            }
-            else
-            {
-                // Autenticación fallida
-                return null;
-            }
+            // Autenticación fallida
+            return null;
         }
 
 
-        public string GenerateJwtToken(Login user, string rol)
+
+
+        public string GenerateJwtToken(Login user)
         {
             var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
 
@@ -58,7 +50,7 @@ namespace api_ecommerce_v1.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()), // Cambié DateTime a DateTimeOffset y convertí a segundos Unix
                 new Claim("id", user.Id.ToString()), // Asegurarse de convertir el Id a cadena.
-                new Claim("rol", rol) // Asegurarse de convertir RolId a cadena.
+                new Claim("rol", user.rol.ToString()) // Asegurarse de convertir RolId a cadena.
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));

@@ -30,12 +30,6 @@ namespace api_ecommerce_v1.Models
         [StringLength(50)]
         public string nit { get; set; }
 
-
-        [Required(ErrorMessage = "El campo 'rol' es requerido.")]
-        [StringLength(50)]
-        [NotNumeric(ErrorMessage = "El campo 'rol' no debe contener números.")]
-        public string rol { get; set; }
-
         // Propiedad de navegación para la relación con Login
         public int LoginId { get; set; }
         public Login Login { get; set; }

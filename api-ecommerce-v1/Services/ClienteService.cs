@@ -1,7 +1,5 @@
 ﻿using api_ecommerce_v1.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
 
 
 namespace api_ecommerce_v1.Services
