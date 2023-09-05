@@ -1,7 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
-using api_ecommerce_v1.Services; // Asegúrate de importar el espacio de nombres adecuado
+using api_ecommerce_v1.Services;
 using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Errors;
+using api_ecommerce_v1.Helpers;
+using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace api_ecommerce_v1.Controllers
 {
@@ -10,11 +18,18 @@ namespace api_ecommerce_v1.Controllers
     public class ClientController : ControllerBase
     {
         private readonly IClienteService _clienteService;
+        private readonly Jwthelper _jwtHelper;
+        private readonly ApplicationDbContext _context; 
+        public IConfiguration _configuration;
 
-        public ClientController(IClienteService clienteService)
+        public ClientController(IClienteService clienteService, Jwthelper jwtHelper, ApplicationDbContext context, IConfiguration configuration)
         {
             _clienteService = clienteService;
+            _jwtHelper = jwtHelper;
+            _context = context;
+            _configuration = configuration;
         }
+
 
         // GET: api/client
         [HttpGet]
@@ -32,7 +47,14 @@ namespace api_ecommerce_v1.Controllers
 
             if (client == null)
             {
-                return NotFound(); // Cliente no encontrado
+                var errorResponse = new
+                {
+                    mensaje = "Cliente no encontrado."
+                };
+
+                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return NotFound(jsonResponse);
             }
 
             return Ok(client);
@@ -61,6 +83,9 @@ namespace api_ecommerce_v1.Controllers
             return CreatedAtAction(nameof(GetClientById), new { id = createdClient.Id }, createdClient);
         }
 
+       
+       
+
 
         // PUT: api/client/{id}
         [HttpPut("{id}")]
@@ -68,14 +93,30 @@ namespace api_ecommerce_v1.Controllers
         {
             if (cliente == null || id != cliente.Id)
             {
-                return BadRequest(); // Solicitud no válida
+                // Crear un objeto JSON personalizado para el mensaje de error
+                var errorResponse = new
+                {
+                    mensaje = "Solicitud no válida."
+                };
+
+                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 400 (BadRequest)
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return BadRequest(jsonResponse);
             }
 
             var updatedClient = _clienteService.ActualizarCliente(id, cliente);
 
             if (updatedClient == null)
             {
-                return NotFound(); // Cliente no encontrado
+                // Crear un objeto JSON personalizado para el mensaje de error
+                var errorResponse = new
+                {
+                    mensaje = "Cliente no encontrado."
+                };
+
+                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404 (NotFound)
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return NotFound(jsonResponse);
             }
 
             return Ok(updatedClient);
@@ -89,10 +130,30 @@ namespace api_ecommerce_v1.Controllers
 
             if (!deleted)
             {
-                return NotFound(); // Cliente no encontrado
+                // Crear un objeto JSON personalizado para el mensaje de error
+                var errorResponse = new
+                {
+                    mensaje = "Cliente no encontrado."
+                };
+
+                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404 (NotFound)
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return NotFound(jsonResponse);
             }
 
-            return NoContent(); // Éxito en la eliminación
+            // Crear un objeto JSON personalizado para el mensaje de éxito
+            var successResponse = new
+            {
+                mensaje = "Cliente eliminado exitosamente."
+            };
+
+            // Serializar el objeto JSON y devolverlo con una respuesta HTTP 200 (OK)
+            var successJsonResponse = JsonConvert.SerializeObject(successResponse);
+            return Ok(successJsonResponse);
         }
     }
+
+  
+
 }
+

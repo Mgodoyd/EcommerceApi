@@ -18,5 +18,6 @@ namespace api_ecommerce_v1.Services
 
         // Método para eliminar un cliente
         bool EliminarCliente(int clienteId);
+
     }
 }

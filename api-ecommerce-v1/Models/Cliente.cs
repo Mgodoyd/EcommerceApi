@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace api_ecommerce_v1.Models
 {
@@ -21,23 +21,16 @@ namespace api_ecommerce_v1.Models
         [NotNumeric(ErrorMessage = "El campo 'last name' no debe contener números.")]
         public string lastname { get; set; }
 
-        [Required(ErrorMessage = "El campo 'email' es requerido.")]
-        [StringLength(50)]
-        [EmailAddress(ErrorMessage = "El campo 'email' debe ser una dirección de correo electrónico válida.")]
-        public string Email { get; set;}
 
         [Required]
         [StringLength(50)]
         [NotNumeric(ErrorMessage = "El campo 'country' no debe contener números.")]
-        public string Country { get; set; }
+        public string country { get; set; }
 
-        [Required(ErrorMessage = "El campo 'password' es requerido.")]
-        [StringLength(200)]
-        public string Password { get; set;}
 
         [Required]
         [StringLength(50)]
-        public string Profile { get; set;}
+        public string profile { get; set;}
 
         [Required(ErrorMessage = "El campo 'phone' es requerido.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'phone' debe ser un número.")]
@@ -45,7 +38,7 @@ namespace api_ecommerce_v1.Models
 
         [Required]
         [StringLength(50)]
-        public string Fbirth { get; set;}
+        public string fbirth { get; set;}
 
         [Required]
         [StringLength(50)]
@@ -54,8 +47,18 @@ namespace api_ecommerce_v1.Models
 
         [Required(ErrorMessage = "El campo 'nit' es requerido.")]
         [StringLength(50)]
-        public string Nit { get; set;}
+        public string nit { get; set;}
+
+        [Required(ErrorMessage = "El campo 'rol' es requerido.")]
+        [StringLength(50)]
+        [NotNumeric(ErrorMessage = "El campo 'rol' no debe contener números.")]
+        public string rol { get; set; }
+
+        // Propiedad de navegación para la relación con Login
+        public int LoginId { get; set; }
+        public Login Login { get; set; }
     }
+
 }
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
