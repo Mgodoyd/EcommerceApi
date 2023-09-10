@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Services;
+using Microsoft.AspNetCore.Cors;
 
 namespace api_ecommerce_v1.Controllers
 {
+    [EnableCors("AllowSpecificOrigin")]
     [Route("api/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
@@ -14,6 +16,8 @@ namespace api_ecommerce_v1.Controllers
         {
             _loginService = loginService;
         }
+
+
         [HttpPost("login")]
         public IActionResult Login([FromBody] Login requestData)
         {

@@ -51,7 +51,7 @@ namespace api_ecommerce_v1.Services
 
             clienteExistente.Name = clienteActualizado.Name;
             clienteExistente.lastname = clienteActualizado.lastname;
-            clienteExistente.country = clienteActualizado.country;
+            clienteExistente.address = clienteActualizado.address;
             clienteExistente.profile = clienteActualizado.profile;
             clienteExistente.phone = clienteActualizado.phone;
             // Actualizar otros campos según sea necesario

@@ -4,40 +4,46 @@ using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Errors;
 using api_ecommerce_v1.Helpers;
 using Newtonsoft.Json;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using Newtonsoft.Json.Linq;
-using System.Text;
+using api_ecommerce_v1.helpers;
 
 namespace api_ecommerce_v1.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ServiceFilter(typeof(JwtAuthorizationFilter))]
     public class ClientController : ControllerBase
     {
         private readonly IClienteService _clienteService;
         private readonly Jwthelper _jwtHelper;
+        private readonly ILoginService _loginService;
         private readonly ApplicationDbContext _context; 
         public IConfiguration _configuration;
 
-        public ClientController(IClienteService clienteService, Jwthelper jwtHelper, ApplicationDbContext context, IConfiguration configuration)
+        public ClientController(IClienteService clienteService, Jwthelper jwtHelper, ILoginService loginService, ApplicationDbContext context, IConfiguration configuration)
         {
             _clienteService = clienteService;
             _jwtHelper = jwtHelper;
+            _loginService = loginService;
             _context = context;
             _configuration = configuration;
         }
 
 
-        // GET: api/client
         [HttpGet]
         public IActionResult GetAllClients()
         {
             var clients = _clienteService.ObtenerTodosLosClientes();
             return Ok(clients);
         }
+
+
+
+
+
+
+
+
+
 
         // GET: api/client/{id}
         [HttpGet("{id}")]

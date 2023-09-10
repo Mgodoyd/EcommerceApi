@@ -14,3 +14,6 @@ namespace api_ecommerce_v1
         }
     }
 }
+
+/*add-migration nombre*/
+/*update-database*/

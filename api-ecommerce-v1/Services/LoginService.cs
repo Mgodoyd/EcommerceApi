@@ -1,9 +1,12 @@
 ﻿using System;
+using BCrypt.Net;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using api_ecommerce_v1.Models;
 using Microsoft.IdentityModel.Tokens;
+using api_ecommerce_v1.helpers;
+using Microsoft.Extensions.Configuration;
 
 namespace api_ecommerce_v1.Services
 {
@@ -44,26 +47,71 @@ namespace api_ecommerce_v1.Services
         {
             var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
 
+            // Calcula la fecha de expiración (30 minutos desde ahora)
+            var expirationDate = DateTime.UtcNow.AddMinutes(30);
+
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()), // Cambié DateTime a DateTimeOffset y convertí a segundos Unix
-                new Claim("id", user.Id.ToString()), // Asegurarse de convertir el Id a cadena.
-                new Claim("rol", user.rol.ToString()) // Asegurarse de convertir RolId a cadena.
+                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
+                new Claim("id", user.Id.ToString()),
+                new Claim("rol", user.rol.ToString()),
+                new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(expirationDate).ToUnixTimeSeconds().ToString()) // Agrega el tiempo de expiración
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                claims: claims, // Agregué la lista de claims aquí
-                expires: DateTime.UtcNow.AddMinutes(30), // Aumentar la duración del token según tus necesidades.
+                claims: claims,
+                expires: expirationDate, // Utiliza la fecha de expiración calculada
                 signingCredentials: signingCredentials
             );
 
-            // Generar el token como una cadena
+            // Genera el token como una cadena
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+        public bool ValidateToken(string token)
+        {
+            try
+            {
+                var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(jwt.Key);
+
+                var claimsPrincipal  = tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                // Verificar si el usuario tiene el rol de administrador
+                var isAdmin = claimsPrincipal.Claims.Any(claim => claim.Type == "rol" && claim.Value == "administrador");
+                
+                return isAdmin;
+            }
+            catch (Exception)
+            {
+                // Si se lanza una excepción, el token no es válido
+                return false;
+            }
+        }
     }
+
+   
+
 }
+
+
+
+
+
+
+
+

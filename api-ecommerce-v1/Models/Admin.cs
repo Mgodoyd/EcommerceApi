@@ -21,6 +21,10 @@ namespace api_ecommerce_v1.Models
         [NotNumeric(ErrorMessage = "El campo 'last name' no debe contener números.")]
         public string lastname { get; set; }
 
+        [Required]
+        [StringLength(50)]
+        public string address { get; set; }
+
 
         [Required(ErrorMessage = "El campo 'phone' es requerido.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'phone' debe ser un número.")]

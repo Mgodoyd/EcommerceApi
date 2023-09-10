@@ -1,4 +1,5 @@
 ﻿using api_ecommerce_v1.Errors;
+using api_ecommerce_v1.helpers;
 using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ namespace api_ecommerce_v1.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ServiceFilter(typeof(JwtAuthorizationFilter))]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;

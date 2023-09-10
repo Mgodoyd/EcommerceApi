@@ -24,26 +24,16 @@ namespace api_ecommerce_v1.Models
 
         [Required]
         [StringLength(50)]
-        [NotNumeric(ErrorMessage = "El campo 'country' no debe contener números.")]
-        public string country { get; set; }
+        public string address { get; set; }
 
 
-        [Required]
         [StringLength(50)]
-        public string profile { get; set;}
+        public string? profile { get; set;}
 
         [Required(ErrorMessage = "El campo 'phone' es requerido.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'phone' debe ser un número.")]
         public int phone { get; set;}
 
-        [Required]
-        [StringLength(50)]
-        public string fbirth { get; set;}
-
-        [Required]
-        [StringLength(50)]
-        [NotNumeric(ErrorMessage = "El campo 'gender' no debe contener números.")]
-        public string gender { get; set;}
 
         [Required(ErrorMessage = "El campo 'nit' es requerido.")]
         [StringLength(50)]
