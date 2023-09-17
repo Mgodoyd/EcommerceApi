@@ -11,17 +11,17 @@ namespace api_ecommerce_v1.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [ServiceFilter(typeof(JwtAuthorizationFilter))]
-    public class ClientController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly IClienteService _clienteService;
+        private readonly IUserService _userService;
         private readonly Jwthelper _jwtHelper;
         private readonly ILoginService _loginService;
         private readonly ApplicationDbContext _context; 
         public IConfiguration _configuration;
 
-        public ClientController(IClienteService clienteService, Jwthelper jwtHelper, ILoginService loginService, ApplicationDbContext context, IConfiguration configuration)
+        public UserController(IUserService userService, Jwthelper jwtHelper, ILoginService loginService, ApplicationDbContext context, IConfiguration configuration)
         {
-            _clienteService = clienteService;
+            _userService = userService;
             _jwtHelper = jwtHelper;
             _loginService = loginService;
             _context = context;
@@ -30,32 +30,25 @@ namespace api_ecommerce_v1.Controllers
 
 
         [HttpGet]
-        public IActionResult GetAllClients()
+        public IActionResult GetAllUser()
         {
-            var clients = _clienteService.ObtenerTodosLosClientes();
+            var clients = _userService.ObtenerTodosLosUser();
             return Ok(clients);
         }
 
 
 
-
-
-
-
-
-
-
         // GET: api/client/{id}
         [HttpGet("{id}")]
-        public IActionResult GetClientById(int id)
+        public IActionResult GetUserById(int id)
         {
-            var client = _clienteService.ObtenerClientePorId(id);
+            var client = _userService.ObtenerUserPorId(id);
 
             if (client == null)
             {
                 var errorResponse = new
                 {
-                    mensaje = "Cliente no encontrado."
+                    mensaje = "Usuario no encontrado."
                 };
 
                 // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404
@@ -68,7 +61,7 @@ namespace api_ecommerce_v1.Controllers
 
         // POST: api/client
         [HttpPost]
-        public IActionResult CreateClient([FromBody] Cliente cliente)
+        public IActionResult CreateUser([FromBody] User user)
         {
             if (!ModelState.IsValid)
             {
@@ -85,8 +78,8 @@ namespace api_ecommerce_v1.Controllers
                 return BadRequest(errorResponse);
             }
 
-            var createdClient = _clienteService.CrearCliente(cliente);
-            return CreatedAtAction(nameof(GetClientById), new { id = createdClient.Id }, createdClient);
+            var createdClient = _userService.CrearUser(user);
+            return CreatedAtAction(nameof(GetUserById), new { id = createdClient.Id }, createdClient);
         }
 
        
@@ -95,9 +88,9 @@ namespace api_ecommerce_v1.Controllers
 
         // PUT: api/client/{id}
         [HttpPut("{id}")]
-        public IActionResult UpdateClient(int id, [FromBody] Cliente cliente)
+        public IActionResult UpdateUser(int id, [FromBody] User user)
         {
-            if (cliente == null || id != cliente.Id)
+            if (user == null || id != user.Id)
             {
                 // Crear un objeto JSON personalizado para el mensaje de error
                 var errorResponse = new
@@ -110,14 +103,14 @@ namespace api_ecommerce_v1.Controllers
                 return BadRequest(jsonResponse);
             }
 
-            var updatedClient = _clienteService.ActualizarCliente(id, cliente);
+            var updatedClient = _userService.ActualizarUser(id, user);
 
             if (updatedClient == null)
             {
                 // Crear un objeto JSON personalizado para el mensaje de error
                 var errorResponse = new
                 {
-                    mensaje = "Cliente no encontrado."
+                    mensaje = "Usuario no encontrado."
                 };
 
                 // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404 (NotFound)
@@ -130,16 +123,16 @@ namespace api_ecommerce_v1.Controllers
 
         // DELETE: api/client/{id}
         [HttpDelete("{id}")]
-        public IActionResult DeleteClient(int id)
+        public IActionResult DeleteUser(int id)
         {
-            var deleted = _clienteService.EliminarCliente(id);
+            var deleted = _userService.EliminarUser(id);
 
             if (!deleted)
             {
                 // Crear un objeto JSON personalizado para el mensaje de error
                 var errorResponse = new
                 {
-                    mensaje = "Cliente no encontrado."
+                    mensaje = "Usuario no encontrado."
                 };
 
                 // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404 (NotFound)
@@ -150,7 +143,7 @@ namespace api_ecommerce_v1.Controllers
             // Crear un objeto JSON personalizado para el mensaje de éxito
             var successResponse = new
             {
-                mensaje = "Cliente eliminado exitosamente."
+                mensaje = "Usuario eliminado exitosamente."
             };
 
             // Serializar el objeto JSON y devolverlo con una respuesta HTTP 200 (OK)

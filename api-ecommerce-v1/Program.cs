@@ -3,6 +3,8 @@ using api_ecommerce_v1.helpers;
 using api_ecommerce_v1.Helpers;
 using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -17,9 +19,9 @@ options.UseSqlServer("name=ConnectionStrings:azureDBConnect"));
 // Add services to the container.
  
 builder.Services.AddControllers();
-builder.Services.AddScoped<IClienteService, ClienteService>();
-builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<JwtAuthorizationFilter>();
 builder.Services.AddScoped<Jwthelper>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -41,6 +43,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -58,5 +62,6 @@ app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 
 app.Run();

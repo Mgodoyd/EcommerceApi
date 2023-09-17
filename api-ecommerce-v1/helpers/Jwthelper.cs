@@ -17,7 +17,7 @@ namespace api_ecommerce_v1.Helpers
             _configuration = configuration;
         }
 
-        public string GenerateJwtToken(Cliente cliente)
+        public string GenerateJwtToken(User cliente)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -33,7 +33,7 @@ namespace api_ecommerce_v1.Helpers
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Issuer"],
                 claims,
-                expires: DateTime.UtcNow.AddHours(5), // Puedes ajustar la expiración del token
+                expires: DateTime.UtcNow.AddSeconds(180), // Puedes ajustar la expiración del token
                 signingCredentials: credentials
             );
 

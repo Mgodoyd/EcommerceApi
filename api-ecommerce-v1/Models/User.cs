@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace api_ecommerce_v1.Models
 {
-    public class Cliente
+    public class User
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -38,6 +38,15 @@ namespace api_ecommerce_v1.Models
         [Required(ErrorMessage = "El campo 'nit' es requerido.")]
         [StringLength(50)]
         public string nit { get; set;}
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime createdDate { get; set; }
+
+        public User()
+        {
+            // Inicializa createdDate con la fecha y hora actuales del servidor
+            createdDate = DateTime.Now; // Utiliza DateTime.UtcNow si prefieres la hora UTC
+        }
 
         // Propiedad de navegación para la relación con Login
         public int LoginId { get; set; }

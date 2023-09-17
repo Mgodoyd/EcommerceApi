@@ -1,56 +1,53 @@
-﻿using api_ecommerce_v1.Errors;
-using api_ecommerce_v1.helpers;
+﻿using Microsoft.AspNetCore.Mvc;
 using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Services;
-using Microsoft.AspNetCore.Mvc;
+using api_ecommerce_v1.helpers;
 using Newtonsoft.Json;
+using api_ecommerce_v1.Errors;
 
 namespace api_ecommerce_v1.Controllers
 {
+    [Route("api/products")]
     [ApiController]
-    [Route("api/[controller]")]
+    // [Produces("application/json")]
     [ServiceFilter(typeof(JwtAuthorizationFilter))]
-    public class AdminController : ControllerBase
+    public class ProductController : ControllerBase
     {
-        private readonly IAdminService _adminService;
+        private readonly IProductService _productService;
 
-        public AdminController(IAdminService adminService)
+        public ProductController(IProductService productService)
         {
-            _adminService = adminService;
+            _productService = productService;
         }
 
-        // GET: api/client
         [HttpGet]
-        public IActionResult GetAllAdmins()
+        public IActionResult GetAllProducts()
         {
-            var admins = _adminService.ObtenerTodosLosAdmins();
-            return Ok(admins);
+            var products = _productService.ObtenerTodosLosProdcuts();
+            return Ok(products);
         }
 
-        // GET: api/client/{id}
         [HttpGet("{id}")]
-        public IActionResult GetAdminById(int id)
+        public IActionResult GetProductById(int id)
         {
-            var admin = _adminService.ObtenerAdminPorId(id);
+            var product = _productService.ObtenerProductPorId(id);
 
-            if (admin == null)
+            if (product == null)
             {
                 var errorResponse = new
                 {
-                    mensaje = "Admin no encontrado."
+                    mensaje = "Producto no encontrado."
                 };
 
-                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return NotFound(jsonResponse);
             }
 
-            return Ok(admin);
+            return Ok(product);
         }
 
-        // POST: api/client
         [HttpPost]
-        public IActionResult CreateAdmin([FromBody] Admin admin)
+        public IActionResult CreateProduct(Product product)
         {
             if (!ModelState.IsValid)
             {
@@ -67,16 +64,15 @@ namespace api_ecommerce_v1.Controllers
                 return BadRequest(errorResponse);
             }
 
-            var createdAdmin = _adminService.CrearAdmin(admin);
-            return CreatedAtAction(nameof(GetAdminById), new { id = createdAdmin.Id }, createdAdmin);
+            var newProduct = _productService.CrearProduct(product);
+            return CreatedAtAction(nameof(GetProductById), new { id = newProduct.Id }, newProduct);
         }
 
 
-        // PUT: api/admin/{id}
         [HttpPut("{id}")]
-        public IActionResult UpdateAdmin(int id, [FromBody] Admin admin)
+        public IActionResult UpdateProduct(int id, Product product)
         {
-            if (admin == null || id != admin.Id)
+            if (product == null || id != product.Id)
             {
                 // Crear un objeto JSON personalizado para el mensaje de error
                 var errorResponse = new
@@ -89,14 +85,13 @@ namespace api_ecommerce_v1.Controllers
                 return BadRequest(jsonResponse);
             }
 
-            var updatedAdmin = _adminService.ActualizarAdmin(id, admin);
+            var updatedProduct = _productService.ActualizarProduct(id, product);
 
-            if (updatedAdmin == null)
+            if (updatedProduct == null)
             {
-                // Crear un objeto JSON personalizado para el mensaje de error
                 var errorResponse = new
                 {
-                    mensaje = "Admin no encontrado."
+                    mensaje = "Producto no encontrado."
                 };
 
                 // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404 (NotFound)
@@ -104,21 +99,19 @@ namespace api_ecommerce_v1.Controllers
                 return NotFound(jsonResponse);
             }
 
-            return Ok(updatedAdmin);
+            return Ok(updatedProduct);
         }
 
-        // DELETE: api/admin/{id}
         [HttpDelete("{id}")]
-        public IActionResult DeleteAdmin(int id)
+        public IActionResult DeleteProduct(int id)
         {
-            var deleted = _adminService.EliminarAdmin(id);
+            var result = _productService.EliminarProduct(id);
 
-            if (!deleted)
+            if (!result)
             {
-                // Crear un objeto JSON personalizado para el mensaje de error
                 var errorResponse = new
                 {
-                    mensaje = "Admin no encontrado."
+                    mensaje = "Producto no encontrado."
                 };
 
                 // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404 (NotFound)
@@ -126,10 +119,9 @@ namespace api_ecommerce_v1.Controllers
                 return NotFound(jsonResponse);
             }
 
-            // Crear un objeto JSON personalizado para el mensaje de éxito
             var successResponse = new
             {
-                mensaje = "Admin eliminado exitosamente."
+                mensaje = "Usuario eliminado exitosamente."
             };
 
             // Serializar el objeto JSON y devolverlo con una respuesta HTTP 200 (OK)
@@ -138,4 +130,3 @@ namespace api_ecommerce_v1.Controllers
         }
     }
 }
-

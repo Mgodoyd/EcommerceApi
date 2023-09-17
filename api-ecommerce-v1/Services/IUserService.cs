@@ -2,21 +2,22 @@
 
 namespace api_ecommerce_v1.Services
 {
-    public interface IAdminService
+    public interface IUserService
     {
         // Método para crear un nuevo cliente
-        Admin CrearAdmin(Admin admin);
+        User CrearUser(User user);
 
         // Método para obtener todos los clientes
-        List<Admin> ObtenerTodosLosAdmins();
+        List<User> ObtenerTodosLosUser();
 
         // Método para obtener un cliente por su ID
-        Admin ObtenerAdminPorId(int adminId);
+        User ObtenerUserPorId(int userId);
 
         // Método para actualizar información de un cliente
-        Admin ActualizarAdmin(int adminId, Admin adminActualizado);
+        User ActualizarUser(int userId, User userActualizado);
 
         // Método para eliminar un cliente
-        bool EliminarAdmin(int adminId);
+        bool EliminarUser(int userId);
+
     }
 }

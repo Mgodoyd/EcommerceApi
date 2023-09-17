@@ -48,16 +48,16 @@ namespace api_ecommerce_v1.Services
             var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
 
             // Calcula la fecha de expiración (30 minutos desde ahora)
-            var expirationDate = DateTime.UtcNow.AddMinutes(30);
+            var expiration = DateTime.UtcNow.AddSeconds(180);
 
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
+                new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(expiration).ToUnixTimeSeconds().ToString()), // Agrega el tiempo de expiración
                 new Claim("id", user.Id.ToString()),
                 new Claim("rol", user.rol.ToString()),
-                new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(expirationDate).ToUnixTimeSeconds().ToString()) // Agrega el tiempo de expiración
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
@@ -65,7 +65,7 @@ namespace api_ecommerce_v1.Services
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: expirationDate, // Utiliza la fecha de expiración calculada
+                expires: expiration, 
                 signingCredentials: signingCredentials
             );
 
