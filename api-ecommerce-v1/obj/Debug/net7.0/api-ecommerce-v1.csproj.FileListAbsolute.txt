@@ -80,3 +80,6 @@ C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\B
 C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll
 C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\BCrypt.Net-Next.dll
+C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Azure.Storage.Blobs.dll
+C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Azure.Storage.Common.dll
+C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\System.IO.Hashing.dll

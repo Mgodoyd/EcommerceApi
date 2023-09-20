@@ -25,9 +25,11 @@ namespace api_ecommerce_v1.Models
         [StringLength(50)]
         public string? galery { get; set; }
 
+        public string? frontpage { get; set; }
 
-        [Required(ErrorMessage = "El campo 'frontpage' es requerido.")]
-        public string frontpage { get; set; }
+        [NotMapped]
+        [Display(Name = "Image")]
+        public IFormFile ImageFile { get; set; }
 
         [Required(ErrorMessage = "El campo 'price' es requerido.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'price' debe ser un número.")]
@@ -61,6 +63,10 @@ namespace api_ecommerce_v1.Models
         //[Required(ErrorMessage = "El campo 'state' es requerido.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'state' debe ser un número.")]
         public string? state { get; set; }
+
+//        [Required(ErrorMessage = "El campo 'product' es requerido.")]
+        public int inventoryId { get; set; }
+        public Inventory inventory { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime createdDate { get; set; }

@@ -3,8 +3,6 @@ using api_ecommerce_v1.helpers;
 using api_ecommerce_v1.Helpers;
 using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -22,6 +20,8 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductBlobConfiguration, ProductBlobConfiguration>();
+builder.Services.AddScoped<IInventory, InventoryService>();
 builder.Services.AddScoped<JwtAuthorizationFilter>();
 builder.Services.AddScoped<Jwthelper>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

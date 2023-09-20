@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api_ecommerce_v1;
 
@@ -11,9 +12,11 @@ using api_ecommerce_v1;
 namespace api_ecommerce_v1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230919203826_databasev40")]
+    partial class databasev40
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,38 +187,31 @@ namespace api_ecommerce_v1.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LoginId")
-                        .IsUnique();
+                    b.HasIndex("LoginId");
 
                     b.ToTable("User");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Product", b =>
                 {
-                    b.HasOne("api_ecommerce_v1.Models.Inventory", "inventory")
+                    b.HasOne("api_ecommerce_v1.Models.Inventory", "Inventory")
                         .WithMany()
                         .HasForeignKey("inventoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("inventory");
+                    b.Navigation("Inventory");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.User", b =>
                 {
                     b.HasOne("api_ecommerce_v1.Models.Login", "Login")
-                        .WithOne("user")
-                        .HasForeignKey("api_ecommerce_v1.Models.User", "LoginId")
+                        .WithMany()
+                        .HasForeignKey("LoginId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Login");
-                });
-
-            modelBuilder.Entity("api_ecommerce_v1.Models.Login", b =>
-                {
-                    b.Navigation("user")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

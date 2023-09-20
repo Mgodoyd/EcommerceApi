@@ -46,7 +46,7 @@ namespace api_ecommerce_v1.Controllers
                 success = true,
                 message = "Autenticación exitosa",
                 token = token,
-                exp = 180
+                exp = 1800
             });
         }
 

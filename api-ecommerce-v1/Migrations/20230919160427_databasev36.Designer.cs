@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api_ecommerce_v1;
 
@@ -11,9 +12,11 @@ using api_ecommerce_v1;
 namespace api_ecommerce_v1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230919160427_databasev36")]
+    partial class databasev36
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,18 +34,31 @@ namespace api_ecommerce_v1.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("amount")
+                        .HasMaxLength(50)
                         .HasColumnType("int");
 
                     b.Property<DateTime>("createdDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("productId")
+                        .HasMaxLength(50)
+                        .HasColumnType("int");
+
                     b.Property<string>("supplier")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("userId")
+                        .HasMaxLength(50)
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("productId");
+
+                    b.HasIndex("userId");
 
                     b.ToTable("Inventory");
                 });
@@ -106,9 +122,6 @@ namespace api_ecommerce_v1.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("inventoryId")
-                        .HasColumnType("int");
-
                     b.Property<int>("points")
                         .HasColumnType("int");
 
@@ -134,8 +147,6 @@ namespace api_ecommerce_v1.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("inventoryId");
 
                     b.ToTable("Product");
                 });
@@ -184,38 +195,39 @@ namespace api_ecommerce_v1.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LoginId")
-                        .IsUnique();
+                    b.HasIndex("LoginId");
 
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("api_ecommerce_v1.Models.Product", b =>
+            modelBuilder.Entity("api_ecommerce_v1.Models.Inventory", b =>
                 {
-                    b.HasOne("api_ecommerce_v1.Models.Inventory", "inventory")
+                    b.HasOne("api_ecommerce_v1.Models.Product", "product")
                         .WithMany()
-                        .HasForeignKey("inventoryId")
+                        .HasForeignKey("productId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("inventory");
+                    b.HasOne("api_ecommerce_v1.Models.User", "user")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("product");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.User", b =>
                 {
                     b.HasOne("api_ecommerce_v1.Models.Login", "Login")
-                        .WithOne("user")
-                        .HasForeignKey("api_ecommerce_v1.Models.User", "LoginId")
+                        .WithMany()
+                        .HasForeignKey("LoginId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Login");
-                });
-
-            modelBuilder.Entity("api_ecommerce_v1.Models.Login", b =>
-                {
-                    b.Navigation("user")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -33,7 +33,7 @@ namespace api_ecommerce_v1.Helpers
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Issuer"],
                 claims,
-                expires: DateTime.UtcNow.AddSeconds(180), // Puedes ajustar la expiración del token
+                expires: DateTime.UtcNow.AddSeconds(1800), // Puedes ajustar la expiración del token
                 signingCredentials: credentials
             );
 

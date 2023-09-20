@@ -14,10 +14,12 @@ namespace api_ecommerce_v1.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly IProductBlobConfiguration _productBlobConfiguration;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IProductBlobConfiguration productBlobConfiguration)
         {
             _productService = productService;
+            _productBlobConfiguration = productBlobConfiguration;
         }
 
         [HttpGet]
@@ -47,8 +49,15 @@ namespace api_ecommerce_v1.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProduct(Product product)
+        public async Task<IActionResult> CreateProduct([FromForm] Product product, IFormFile imageFile)
         {
+            if (imageFile != null)
+            {
+                // Cargar la imagen en Azure Blob Storage y obtener su nombre
+                string blobName = await _productBlobConfiguration.UploadFileBlob(imageFile, "ecommerce");
+                product.frontpage = blobName; // Asigna el nombre del blob como URL de la imagen
+            }
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
@@ -69,10 +78,18 @@ namespace api_ecommerce_v1.Controllers
         }
 
 
+
         [HttpPut("{id}")]
-        public IActionResult UpdateProduct(int id, Product product)
+        public async Task<IActionResult> UpdateProduct([FromForm] Product product, int id, IFormFile imageFile)
         {
-            if (product == null || id != product.Id)
+            if (imageFile != null)
+            {
+                // Cargar la imagen en Azure Blob Storage y obtener su nombre
+                string blobName = await _productBlobConfiguration.UploadFileBlob(imageFile, "ecommerce");
+                product.frontpage = blobName; // Asigna el nombre del blob como URL de la imagen
+            }
+
+         /*   if (product == null || id != product.Id)
             {
                 // Crear un objeto JSON personalizado para el mensaje de error
                 var errorResponse = new
@@ -83,7 +100,7 @@ namespace api_ecommerce_v1.Controllers
                 // Serializar el objeto JSON y devolverlo con una respuesta HTTP 400 (BadRequest)
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return BadRequest(jsonResponse);
-            }
+            }*/
 
             var updatedProduct = _productService.ActualizarProduct(id, product);
 
@@ -103,11 +120,11 @@ namespace api_ecommerce_v1.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProduct(int id)
         {
-            var result = _productService.EliminarProduct(id);
+            var product = _productService.ObtenerProductPorId(id);
 
-            if (!result)
+            if (product == null)
             {
                 var errorResponse = new
                 {
@@ -119,9 +136,32 @@ namespace api_ecommerce_v1.Controllers
                 return NotFound(jsonResponse);
             }
 
+            // Obtén el nombre del archivo del producto si está almacenado en el blob
+            string blobName = product.frontpage; // Asegúrate de que esta propiedad coincida con la que almacena el nombre del blob
+
+            if (!string.IsNullOrEmpty(blobName))
+            {
+                // Elimina el archivo del blob storage
+                string blobDeleted = _productBlobConfiguration.DeleteBlob(blobName, "ecommerce");
+            }
+
+            bool result = _productService.EliminarProduct(id);
+
+            if (!result)
+            {
+                var errorResponse = new
+                {
+                    mensaje = "No se pudo eliminar el producto de la base de datos."
+                };
+
+                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 500 (InternalServerError) u otro código de error adecuado
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return StatusCode(500, jsonResponse);
+            }
+
             var successResponse = new
             {
-                mensaje = "Usuario eliminado exitosamente."
+                mensaje = "Producto eliminado exitosamente."
             };
 
             // Serializar el objeto JSON y devolverlo con una respuesta HTTP 200 (OK)

@@ -72,14 +72,14 @@ namespace api_ecommerce_v1.Services
 
         public bool EliminarProduct(int productId)
         {
-            var productExistente = _context.User.FirstOrDefault(p => p.Id == productId);
+            var productExistente = _context.Product.FirstOrDefault(p => p.Id == productId);
 
             if (productExistente == null)
             {
                 return false; // El producto no existe
             }
 
-            _context.User.Remove(productExistente);
+            _context.Product.Remove(productExistente);
             _context.SaveChanges();
             return true;
         }

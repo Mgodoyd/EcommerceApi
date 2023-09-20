@@ -43,35 +43,43 @@ namespace api_ecommerce_v1.Services
 
 
 
-        public string GenerateJwtToken(Login user)
+        public string GenerateJwtToken(Login login)
         {
             var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
 
             // Calcula la fecha de expiración (30 minutos desde ahora)
-            var expiration = DateTime.UtcNow.AddSeconds(180);
+            var expiration = DateTime.UtcNow.AddSeconds(1800);
 
-            var claims = new[]
+            var claimsList = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
                 new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(expiration).ToUnixTimeSeconds().ToString()), // Agrega el tiempo de expiración
-                new Claim("id", user.Id.ToString()),
-                new Claim("rol", user.rol.ToString()),
+                new Claim("id", login.Id.ToString()),
+                new Claim("rol", login.rol.ToString())
             };
+
+            if (login.user != null) // Verifica si login.user no es nulo
+            {
+                claimsList.Add(new Claim("name", login.user.Name.ToString()));
+            }
+
+            var claims = claimsList.ToArray();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: expiration, 
+                expires: expiration,
                 signingCredentials: signingCredentials
             );
 
             // Genera el token como una cadena
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
 
 
         public bool ValidateToken(string token)
