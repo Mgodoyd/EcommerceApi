@@ -12,6 +12,7 @@ namespace api_ecommerce_v1.Services
 
         // Método para obtener un producto por su ID
         Inventory ObtenerInventoryPorId(int inventoryId);
+        List<Inventory> ObtenerInventariosPorProductId(int productId);
 
         // Método para actualizar información de un producto
         Inventory ActualizarInventory(int inventoryId, Inventory inventoryActualizado);

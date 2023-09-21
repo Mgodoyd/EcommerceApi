@@ -60,10 +60,6 @@ namespace api_ecommerce_v1.Services
                 new Claim("rol", login.rol.ToString())
             };
 
-            if (login.user != null) // Verifica si login.user no es nulo
-            {
-                claimsList.Add(new Claim("name", login.user.Name.ToString()));
-            }
 
             var claims = claimsList.ToArray();
 

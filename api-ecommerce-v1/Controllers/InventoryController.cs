@@ -44,6 +44,26 @@ namespace api_ecommerce_v1.Controllers
             return Ok(inventory);
         }
 
+
+        [HttpGet("product/{id}")]
+        public IActionResult ObtenerInventariosPorProductId(int productId)
+        {
+            var inventory = _inventoryService.ObtenerInventariosPorProductId(productId);
+
+            if (inventory == null)
+            {
+                var errorResponse = new
+                {
+                    mensaje = "Producto no encontrado."
+                };
+
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return NotFound(jsonResponse);
+            }
+
+            return Ok(inventory);
+        }
+
         [HttpPost]
         public IActionResult CreateInventory([FromForm] Inventory inventory)
         {

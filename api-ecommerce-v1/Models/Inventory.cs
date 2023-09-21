@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace api_ecommerce_v1.Models
 {
@@ -17,7 +18,7 @@ namespace api_ecommerce_v1.Models
 
         [Required(ErrorMessage = "El campo 'supplier' es requerido.")]
         [StringLength(50)]
-        [NotNumeric(ErrorMessage = "El campo 'name' no debe contener números.")]
+        [NotNumeric(ErrorMessage = "El campo 'supplier' no debe contener números.")]
         public string supplier { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -27,6 +28,10 @@ namespace api_ecommerce_v1.Models
         {
             createdDate = DateTime.Now;
         }
+
+        public int productId { get; set; }
+       // [JsonIgnore]
+        public Product? product { get; set; }
     }
 }
 

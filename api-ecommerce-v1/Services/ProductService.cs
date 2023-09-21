@@ -12,20 +12,32 @@ namespace api_ecommerce_v1.Services
             _context = context;
         }
 
-        public Product CrearProduct(Product product )
+        public Product CrearProduct(Product product)
         {
-
-            // Ahora puedes agregar el producto al contexto y guardar los cambios en la base de datos.
+            // Agrega el producto al contexto y guarda los cambios en la base de datos.
             _context.Product.Add(product);
+            _context.SaveChanges();
+
+            // Crea el inventario y asigna el productId del producto al inventario.
+            var inventory = new Inventory
+            {
+                productId = product.Id,
+                supplier = product.inventory.supplier,
+                amount = product.stock
+            };
+
+            // Agrega el inventario al contexto y guarda los cambios en la base de datos.
+            _context.Inventory.Add(inventory);
             _context.SaveChanges();
 
             return product;
         }
 
 
+
         public List<Product> ObtenerTodosLosProdcuts()
         {
-            var products = _context.Product.ToList(); // Quita el .Include(p => p.title)
+            var products = _context.Product.ToList(); 
             return products;
         }
 

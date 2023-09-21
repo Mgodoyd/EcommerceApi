@@ -22,6 +22,7 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductBlobConfiguration, ProductBlobConfiguration>();
 builder.Services.AddScoped<IInventory, InventoryService>();
+builder.Services.AddScoped<ICoupon, CouponService>();
 builder.Services.AddScoped<JwtAuthorizationFilter>();
 builder.Services.AddScoped<Jwthelper>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

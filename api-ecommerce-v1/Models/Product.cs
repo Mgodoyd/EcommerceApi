@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace api_ecommerce_v1.Models
 {
@@ -64,9 +65,11 @@ namespace api_ecommerce_v1.Models
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'state' debe ser un número.")]
         public string? state { get; set; }
 
-//        [Required(ErrorMessage = "El campo 'product' es requerido.")]
+        //        [Required(ErrorMessage = "El campo 'product' es requerido.")]
+
         public int inventoryId { get; set; }
-        public Inventory inventory { get; set; }
+        [JsonIgnore]
+        public Inventory? inventory { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime createdDate { get; set; }

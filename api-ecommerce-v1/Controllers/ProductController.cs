@@ -4,6 +4,7 @@ using api_ecommerce_v1.Services;
 using api_ecommerce_v1.helpers;
 using Newtonsoft.Json;
 using api_ecommerce_v1.Errors;
+using Microsoft.EntityFrameworkCore;
 
 namespace api_ecommerce_v1.Controllers
 {
@@ -15,11 +16,13 @@ namespace api_ecommerce_v1.Controllers
     {
         private readonly IProductService _productService;
         private readonly IProductBlobConfiguration _productBlobConfiguration;
+        private readonly ApplicationDbContext _context;
 
-        public ProductController(IProductService productService, IProductBlobConfiguration productBlobConfiguration)
+        public ProductController(IProductService productService, IProductBlobConfiguration productBlobConfiguration, ApplicationDbContext context)
         {
             _productService = productService;
             _productBlobConfiguration = productBlobConfiguration;
+            _context = context;
         }
 
         [HttpGet]
@@ -144,19 +147,33 @@ namespace api_ecommerce_v1.Controllers
                 // Elimina el archivo del blob storage
                 string blobDeleted = _productBlobConfiguration.DeleteBlob(blobName, "ecommerce");
             }
-
-            bool result = _productService.EliminarProduct(id);
-
-            if (!result)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                var errorResponse = new
+                try
                 {
-                    mensaje = "No se pudo eliminar el producto de la base de datos."
-                };
+                    // Elimina todos los registros de Inventory con el mismo productId
+                    var inventoriesToDelete = _context.Inventory.Where(i => i.productId == id);
+                    _context.Inventory.RemoveRange(inventoriesToDelete);
 
-                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 500 (InternalServerError) u otro código de error adecuado
-                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
-                return StatusCode(500, jsonResponse);
+                    // Luego, elimina el producto
+                    _context.Product.Remove(product);
+
+                    // Guarda los cambios en una transacción
+                    _context.SaveChanges();
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    var errorResponse = new
+                    {
+                        mensaje = "Ocurrió un error al eliminar el producto y sus inventarios relacionados."
+                    };
+
+                    // Serializar el objeto JSON y devolverlo con una respuesta HTTP 500 (InternalServerError) u otro código de error adecuado
+                    var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                    return StatusCode(500, jsonResponse);
+                }
             }
 
             var successResponse = new
