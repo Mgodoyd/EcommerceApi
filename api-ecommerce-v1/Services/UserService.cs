@@ -34,10 +34,25 @@ namespace api_ecommerce_v1.Services
         }
 
         // Método para obtener un cliente por su ID
-        public User ObtenerUserPorId(int clienteId)
+        public User ObtenerUserPorId(int userId)
         {
-            return _context.User.Include(u => u.Login).FirstOrDefault(c => c.Id == clienteId);
+            // Filtra los logins por el Id proporcionado
+            var login = _context.Login.FirstOrDefault(l => l.Id == userId);
+
+            // Verifica si se encontraron datos
+            if (login != null)
+            {
+                // Encuentra al usuario correspondiente al LoginId
+                var userData = _context.User.FirstOrDefault(u => u.LoginId == login.Id);
+
+                return userData;
+            }
+
+            // Si no se encontraron datos o no existe un Login con ese Id, puedes retornar null o manejarlo según tus necesidades
+            return null;
         }
+
+
 
         // Método para actualizar información de un cliente
         public User ActualizarUser(int clienteId, User clienteActualizado)
@@ -64,7 +79,7 @@ namespace api_ecommerce_v1.Services
             clienteExistente.Login.password = clienteActualizado.Login.password;
             clienteExistente.Login.rol = clienteActualizado.Login.rol;
 
-           string hashedPassword = BCrypt.Net.BCrypt.HashPassword(clienteActualizado.Login.password);
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(clienteActualizado.Login.password);
             clienteExistente.Login.password = hashedPassword;
 
             // Marca la entidad User como modificada
@@ -91,7 +106,7 @@ namespace api_ecommerce_v1.Services
             return true;
         }
 
-       
+
 
     }
 }

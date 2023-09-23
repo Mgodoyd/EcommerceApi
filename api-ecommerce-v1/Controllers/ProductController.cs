@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using api_ecommerce_v1.Models;
-using api_ecommerce_v1.Services;
 using api_ecommerce_v1.helpers;
 using Newtonsoft.Json;
 using api_ecommerce_v1.Errors;
 using Microsoft.EntityFrameworkCore;
+using api_ecommerce_v1.Services;
 
 namespace api_ecommerce_v1.Controllers
 {
     [Route("api/products")]
     [ApiController]
     // [Produces("application/json")]
-    [ServiceFilter(typeof(JwtAuthorizationFilter))]
+  //  [ServiceFilter(typeof(JwtAuthorizationFilter))]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;

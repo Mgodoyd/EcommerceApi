@@ -8,7 +8,7 @@ namespace api_ecommerce_v1.Services
 
         public ProductBlobConfiguration(IConfiguration configuration)
         {
-             string key = configuration["Blob:ConnectionString"];
+            string key = configuration["Blob:ConnectionString"];
             _blobServiceClient = new BlobServiceClient(key);
         }
 
@@ -25,8 +25,8 @@ namespace api_ecommerce_v1.Services
             BlobClient blobClient = containerClient.GetBlobClient(fileName);
             await blobClient.UploadAsync(stream, true);
             return fileName;
-        } 
-        
+        }
+
         public string DeleteBlob(string blobName, string containerName)
         {
             BlobContainerClient containerClient = GetBlobContainerClient(containerName);

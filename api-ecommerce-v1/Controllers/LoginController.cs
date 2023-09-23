@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using api_ecommerce_v1.Models;
-using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Cors;
+using api_ecommerce_v1.Services;
 
 namespace api_ecommerce_v1.Controllers
 {

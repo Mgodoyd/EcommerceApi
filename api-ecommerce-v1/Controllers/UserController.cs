@@ -1,16 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
-using api_ecommerce_v1.Services;
 using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Errors;
 using api_ecommerce_v1.Helpers;
 using Newtonsoft.Json;
 using api_ecommerce_v1.helpers;
+using api_ecommerce_v1.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace api_ecommerce_v1.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [ServiceFilter(typeof(JwtAuthorizationFilter))]
+    
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -30,6 +31,7 @@ namespace api_ecommerce_v1.Controllers
 
 
         [HttpGet]
+        [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult GetAllUser()
         {
             var clients = _userService.ObtenerTodosLosUser();
@@ -40,6 +42,7 @@ namespace api_ecommerce_v1.Controllers
 
         // GET: api/client/{id}
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public IActionResult GetUserById(int id)
         {
             var client = _userService.ObtenerUserPorId(id);
@@ -61,6 +64,7 @@ namespace api_ecommerce_v1.Controllers
 
         // POST: api/client
         [HttpPost]
+        //[ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult CreateUser([FromBody] User user)
         {
             if (!ModelState.IsValid)
@@ -88,6 +92,7 @@ namespace api_ecommerce_v1.Controllers
 
         // PUT: api/client/{id}
         [HttpPut("{id}")]
+        //[ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult UpdateUser(int id, [FromBody] User user)
         {
             if (user == null || id != user.Id)
@@ -123,6 +128,7 @@ namespace api_ecommerce_v1.Controllers
 
         // DELETE: api/client/{id}
         [HttpDelete("{id}")]
+        [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult DeleteUser(int id)
         {
             var deleted = _userService.EliminarUser(id);

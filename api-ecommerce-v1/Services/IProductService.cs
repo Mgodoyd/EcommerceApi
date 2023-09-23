@@ -6,7 +6,7 @@ namespace api_ecommerce_v1.Services
     {
 
         // Método para crear un nuevo producto
-        Product CrearProduct(Product product );
+        Product CrearProduct(Product product);
 
         // Método para obtener todos los producto
         List<Product> ObtenerTodosLosProdcuts();

@@ -22,6 +22,57 @@ namespace api_ecommerce_v1.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("api_ecommerce_v1.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("icon")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("titles")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Category");
+                });
+
+            modelBuilder.Entity("api_ecommerce_v1.Models.Config", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("correlative")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("logo")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("serie")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Config");
+                });
+
             modelBuilder.Entity("api_ecommerce_v1.Models.Coupon", b =>
                 {
                     b.Property<int>("Id")
@@ -53,6 +104,28 @@ namespace api_ecommerce_v1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cupon");
+                });
+
+            modelBuilder.Entity("api_ecommerce_v1.Models.Galery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("galery")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("productId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("productId");
+
+                    b.ToTable("Galery");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Inventory", b =>
@@ -138,10 +211,6 @@ namespace api_ecommerce_v1.Migrations
                     b.Property<string>("frontpage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("galery")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<int>("inventoryId")
                         .HasColumnType("int");
 
@@ -224,6 +293,17 @@ namespace api_ecommerce_v1.Migrations
                     b.HasIndex("LoginId");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("api_ecommerce_v1.Models.Galery", b =>
+                {
+                    b.HasOne("api_ecommerce_v1.Models.Product", "product")
+                        .WithMany()
+                        .HasForeignKey("productId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("product");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Product", b =>

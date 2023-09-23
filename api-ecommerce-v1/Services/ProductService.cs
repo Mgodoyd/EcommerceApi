@@ -32,15 +32,12 @@ namespace api_ecommerce_v1.Services
 
             return product;
         }
-
-
-
         public List<Product> ObtenerTodosLosProdcuts()
         {
-            var products = _context.Product.ToList(); 
+            var products = _context.Product
+                .Include(p => p.inventory).ToList();
             return products;
         }
-
 
         public Product ObtenerProductPorId(int productId)
         {
@@ -62,7 +59,6 @@ namespace api_ecommerce_v1.Services
             // Actualiza las propiedades de User
             productExistente.title = productActualizado.title;
             productExistente.slug = productActualizado.slug;
-            productExistente.galery = productActualizado.galery;
             productExistente.frontpage = productActualizado.frontpage;
             productExistente.price = productActualizado.price;
             productExistente.description = productActualizado.description;

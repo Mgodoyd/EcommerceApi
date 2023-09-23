@@ -7,6 +7,7 @@ using api_ecommerce_v1.Models;
 using Microsoft.IdentityModel.Tokens;
 using api_ecommerce_v1.helpers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace api_ecommerce_v1.Services
 {
@@ -41,8 +42,6 @@ namespace api_ecommerce_v1.Services
         }
 
 
-
-
         public string GenerateJwtToken(Login login)
         {
             var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
@@ -57,8 +56,9 @@ namespace api_ecommerce_v1.Services
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
                 new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(expiration).ToUnixTimeSeconds().ToString()), // Agrega el tiempo de expiración
                 new Claim("id", login.Id.ToString()),
-                new Claim("rol", login.rol.ToString())
-            };
+                new Claim("rol", login.rol.ToString()),
+        
+        };
 
 
             var claims = claimsList.ToArray();
@@ -86,7 +86,7 @@ namespace api_ecommerce_v1.Services
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.ASCII.GetBytes(jwt.Key);
 
-                var claimsPrincipal  = tokenHandler.ValidateToken(token, new TokenValidationParameters
+                var claimsPrincipal = tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
@@ -97,7 +97,7 @@ namespace api_ecommerce_v1.Services
 
                 // Verificar si el usuario tiene el rol de administrador
                 var isAdmin = claimsPrincipal.Claims.Any(claim => claim.Type == "rol" && claim.Value == "administrador");
-                
+
                 return isAdmin;
             }
             catch (Exception)
@@ -108,7 +108,7 @@ namespace api_ecommerce_v1.Services
         }
     }
 
-   
+
 
 }
 

@@ -21,11 +21,6 @@ namespace api_ecommerce_v1.Models
         [NotNumeric(ErrorMessage = "El campo 'slug' no debe contener números.")]
         public string? slug { get; set; }
 
-
-        //[Required]
-        [StringLength(50)]
-        public string? galery { get; set; }
-
         public string? frontpage { get; set; }
 
         [NotMapped]
@@ -70,6 +65,10 @@ namespace api_ecommerce_v1.Models
         public int inventoryId { get; set; }
         [JsonIgnore]
         public Inventory? inventory { get; set; }
+
+       /* public int galerysId { get; set; }
+        [JsonIgnore]
+        public Galery? galerys { get; set; }*/
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime createdDate { get; set; }

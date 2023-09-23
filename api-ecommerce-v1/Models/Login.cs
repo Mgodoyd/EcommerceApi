@@ -24,7 +24,5 @@ namespace api_ecommerce_v1.Models
         [NotNumeric(ErrorMessage = "El campo 'rol' no debe contener números.")]
         public string? rol { get; set; }
 
-        /*   [JsonIgnore]
-           public  User? user { get; set; }*/
     }
 }

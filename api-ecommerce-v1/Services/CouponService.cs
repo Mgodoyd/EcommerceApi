@@ -19,7 +19,7 @@ namespace api_ecommerce_v1.Services
 
         public List<Coupon> ObtenerTodosCoupon()
         {
-           var coupons = _context.Cupon.ToList();
+            var coupons = _context.Cupon.ToList();
             return coupons;
         }
 
@@ -30,8 +30,8 @@ namespace api_ecommerce_v1.Services
 
         public Coupon ActualizarCoupon(int couponId, Coupon couponActualizado)
         {
-           var couponExistente = _context.Cupon
-                .FirstOrDefault(p => p.Id == couponId);
+            var couponExistente = _context.Cupon
+                 .FirstOrDefault(p => p.Id == couponId);
 
             if (couponExistente == null)
             {
@@ -52,8 +52,8 @@ namespace api_ecommerce_v1.Services
 
         public bool EliminarCoupon(int couponId)
         {
-           var couponExistente = _context.Cupon
-                .FirstOrDefault(p => p.Id == couponId);
+            var couponExistente = _context.Cupon
+                 .FirstOrDefault(p => p.Id == couponId);
 
             if (couponExistente == null)
             {

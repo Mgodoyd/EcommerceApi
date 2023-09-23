@@ -85,8 +85,14 @@ namespace api_ecommerce_v1.Controllers
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return NotFound(jsonResponse);
             }
+            var successResponse = new
+            {
+                mensaje = "Cupon eliminado exitosamente."
+            };
 
-            return Ok();
+            // Serializar el objeto JSON y devolverlo con una respuesta HTTP 200 (OK)
+            var successJsonResponse = JsonConvert.SerializeObject(successResponse);
+            return Ok(successJsonResponse);
         }
 
     }
