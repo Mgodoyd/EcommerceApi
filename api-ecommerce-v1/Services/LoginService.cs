@@ -98,11 +98,15 @@ namespace api_ecommerce_v1.Services
                 // Verificar si el usuario tiene el rol de administrador
                 var isAdmin = claimsPrincipal.Claims.Any(claim => claim.Type == "rol" && claim.Value == "administrador");
 
+                Console.WriteLine("Token validado: " + token);
+                Console.WriteLine("Usuario es administrador: " + isAdmin);
+
                 return isAdmin;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // Si se lanza una excepción, el token no es válido
+                Console.WriteLine("Error al validar token: " + ex.Message);
                 return false;
             }
         }

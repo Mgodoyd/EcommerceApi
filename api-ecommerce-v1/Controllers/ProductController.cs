@@ -11,7 +11,7 @@ namespace api_ecommerce_v1.Controllers
     [Route("api/products")]
     [ApiController]
     // [Produces("application/json")]
-  //  [ServiceFilter(typeof(JwtAuthorizationFilter))]
+  // [ServiceFilter(typeof(JwtAuthorizationFilter))]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -29,6 +29,13 @@ namespace api_ecommerce_v1.Controllers
         public IActionResult GetAllProducts()
         {
             var products = _productService.ObtenerTodosLosProdcuts();
+            return Ok(products);
+        }
+
+        [HttpGet("public")]
+        public IActionResult GetAllProductsPublic()
+        {
+            var products = _productService.ObtenerTodosLosProdcutsPublic();
             return Ok(products);
         }
 

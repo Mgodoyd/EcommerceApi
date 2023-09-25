@@ -35,13 +35,19 @@ namespace api_ecommerce_v1.Services
         public List<Product> ObtenerTodosLosProdcuts()
         {
             var products = _context.Product
-                .Include(p => p.inventory).ToList();
+                .Include(p => p.inventory).Include(p => p.category).ToList();
+            return products;
+        }
+
+        public List<Product> ObtenerTodosLosProdcutsPublic()
+        {
+            var products= _context.Product.Include(p => p.category).ToList();
             return products;
         }
 
         public Product ObtenerProductPorId(int productId)
         {
-            return _context.Product.FirstOrDefault(p => p.Id == productId);
+            return _context.Product.Include(p => p.inventory).Include(p => p.category).FirstOrDefault(p => p.Id == productId);
         }
 
 
@@ -66,8 +72,8 @@ namespace api_ecommerce_v1.Services
             productExistente.stock = productActualizado.stock;
             productExistente.sales = productActualizado.sales;
             productExistente.points = productActualizado.points;
-            productExistente.category = productActualizado.category;
             productExistente.state = productActualizado.state;
+            productExistente.category = productActualizado.category;
 
             // Marca la entidad User como modificada
             _context.Entry(productExistente).State = EntityState.Modified;

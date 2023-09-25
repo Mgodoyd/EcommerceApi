@@ -13,6 +13,8 @@ namespace api_ecommerce_v1.Services
         // Método para obtener un cliente por su ID
         User ObtenerUserPorId(int userId);
 
+        User ObtenerUserAdminPorId(int userId);
+
         // Método para actualizar información de un cliente
         User ActualizarUser(int userId, User userActualizado);
 

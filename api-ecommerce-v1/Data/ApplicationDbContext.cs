@@ -29,6 +29,13 @@ namespace api_ecommerce_v1
              .HasOne(p => p.galerys)  // Producto tiene una relación uno a uno con Galery
              .WithOne(g => g.product)  // Galery tiene una relación uno a uno con Product
              .HasForeignKey<Galery>(g => g.productId);  // Indica que Galery es el lado dependiente*/
+
+            /*modelBuilder.Entity<Product>()
+                .HasOne(p => p.category)
+                .WithMany()*
+                .HasForeignKey(p => p.categoryId);*/
+
+
         }
     }
 }

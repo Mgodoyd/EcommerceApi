@@ -52,10 +52,6 @@ namespace api_ecommerce_v1.Models
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'points' debe ser un número.")]
         public int points { get; set; }
 
-        [Required(ErrorMessage = "El campo 'category' es requerido.")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'category' debe ser un número.")]
-        public int category { get; set; }
-
         //[Required(ErrorMessage = "El campo 'state' es requerido.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'state' debe ser un número.")]
         public string? state { get; set; }
@@ -65,6 +61,10 @@ namespace api_ecommerce_v1.Models
         public int inventoryId { get; set; }
         [JsonIgnore]
         public Inventory? inventory { get; set; }
+
+        public int categoryId { get; set; }
+
+        public Category? category { get; set; }
 
        /* public int galerysId { get; set; }
         [JsonIgnore]

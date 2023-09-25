@@ -38,7 +38,25 @@ namespace api_ecommerce_v1.Controllers
             return Ok(clients);
         }
 
+        [HttpGet("admin/{id}")]
+        [ServiceFilter(typeof(JwtAuthorizationFilter))]
+        public IActionResult  ObtenerUserAdminPorId(int id)
+        {
+            var users = _userService.ObtenerUserAdminPorId(id);
 
+            if (users == null)
+            {
+                var errorResponse = new
+                {
+                    mensaje = "User no encontrado."
+                };
+
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return NotFound(jsonResponse);
+            }
+
+            return Ok(users);
+        }
 
         // GET: api/client/{id}
         [HttpGet("{id}")]
@@ -64,7 +82,7 @@ namespace api_ecommerce_v1.Controllers
 
         // POST: api/client
         [HttpPost]
-        //[ServiceFilter(typeof(JwtAuthorizationFilter))]
+        [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult CreateUser([FromBody] User user)
         {
             if (!ModelState.IsValid)
@@ -93,7 +111,8 @@ namespace api_ecommerce_v1.Controllers
         // PUT: api/client/{id}
         [HttpPut("{id}")]
         //[ServiceFilter(typeof(JwtAuthorizationFilter))]
-        public IActionResult UpdateUser(int id, [FromBody] User user)
+        [AllowAnonymous]
+        public IActionResult UpdateUser(int id, User user)
         {
             if (user == null || id != user.Id)
             {

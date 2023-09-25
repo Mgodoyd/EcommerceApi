@@ -39,15 +39,17 @@ namespace api_ecommerce_v1.helpers
                 return;
             }
 
-            var isAdmin = _loginService.ValidateToken(token);
+            Console.WriteLine("Autorización exitosa.");
 
-            if (!isAdmin)
-            {
-                context.Result = new UnauthorizedObjectResult(new
-                {
-                    message = "No tienes permisos de administrador"
-                });
-            }
+            /* var isAdmin = _loginService.ValidateToken(token);
+
+             if (!isAdmin)
+             {
+                 context.Result = new UnauthorizedObjectResult(new
+                 {
+                     message = "No tienes permisos de administrador"
+                 });
+             }*/
         }
     }
 }

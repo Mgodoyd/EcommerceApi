@@ -11,6 +11,8 @@ namespace api_ecommerce_v1.Services
         // Método para obtener todos los producto
         List<Product> ObtenerTodosLosProdcuts();
 
+        List<Product> ObtenerTodosLosProdcutsPublic();
+
         // Método para obtener un producto por su ID
         Product ObtenerProductPorId(int productId);
 

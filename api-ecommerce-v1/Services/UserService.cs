@@ -1,5 +1,6 @@
 ﻿using api_ecommerce_v1.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 
 namespace api_ecommerce_v1.Services
@@ -33,15 +34,25 @@ namespace api_ecommerce_v1.Services
             return clients;
         }
 
-        // Método para obtener un cliente por su ID
+
+
+        public User ObtenerUserAdminPorId(int userId)
+        {
+            return  _context.User.Include(u => u.Login).FirstOrDefault(u => u.Id == userId);
+        }
+       
+
+
+
         public User ObtenerUserPorId(int userId)
         {
             // Filtra los logins por el Id proporcionado
             var login = _context.Login.FirstOrDefault(l => l.Id == userId);
-
+            Console.WriteLine("Relación Encontrada: " + login);
             // Verifica si se encontraron datos
             if (login != null)
             {
+                Console.WriteLine("Relación: " + login);
                 // Encuentra al usuario correspondiente al LoginId
                 var userData = _context.User.FirstOrDefault(u => u.LoginId == login.Id);
 
