@@ -66,9 +66,10 @@ namespace api_ecommerce_v1.Models
 
         public Category? category { get; set; }
 
-       /* public int galerysId { get; set; }
-        [JsonIgnore]
-        public Galery? galerys { get; set; }*/
+
+
+        //public Galery? galerys { get; set; }
+        public ICollection<Galery>? Galerys { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime createdDate { get; set; }

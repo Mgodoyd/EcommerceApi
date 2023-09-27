@@ -16,6 +16,8 @@ namespace api_ecommerce_v1.Services
         // Método para obtener un producto por su ID
         Product ObtenerProductPorId(int productId);
 
+        Product ObtenerProductPorIdPublic(int productId);
+
         // Método para actualizar información de un producto
         Product ActualizarProduct(int productId, Product productActualizado);
 

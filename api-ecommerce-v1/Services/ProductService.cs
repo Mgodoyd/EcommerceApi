@@ -14,6 +14,20 @@ namespace api_ecommerce_v1.Services
 
         public Product CrearProduct(Product product)
         {
+            var existingCategory = _context.Category.FirstOrDefault(c => c.titles == product.category.titles);
+
+            if (existingCategory != null)
+            {
+                // La categoría ya existe, asocia el producto con la categoría existente.
+                product.category = existingCategory;
+            }
+            else
+            {
+                // La categoría no existe, crea una nueva categoría y asocia el producto con ella.
+                _context.Category.Add(product.category); // Asume que product.Category es la categoría asociada al producto.
+            }
+
+
             // Agrega el producto al contexto y guarda los cambios en la base de datos.
             _context.Product.Add(product);
             _context.SaveChanges();
@@ -32,6 +46,7 @@ namespace api_ecommerce_v1.Services
 
             return product;
         }
+       
         public List<Product> ObtenerTodosLosProdcuts()
         {
             var products = _context.Product
@@ -41,19 +56,43 @@ namespace api_ecommerce_v1.Services
 
         public List<Product> ObtenerTodosLosProdcutsPublic()
         {
-            var products= _context.Product.Include(p => p.category).ToList();
+            var products= _context.Product.Include(p => p.category).Include(p => p.Galerys).Include(p => p.inventory).ToList();
             return products;
         }
 
+
         public Product ObtenerProductPorId(int productId)
         {
-            return _context.Product.Include(p => p.inventory).Include(p => p.category).FirstOrDefault(p => p.Id == productId);
+            return _context.Product.Include(p => p.inventory).Include(p => p.category).Include(p => p.Galerys).FirstOrDefault(p => p.Id == productId);
+        }
+
+        public Product ObtenerProductPorIdPublic(int productId)
+        {
+            return _context.Product
+                .Include(p => p.inventory)
+                .Include(p => p.category)
+                .Include(p => p.Galerys) // Nota la mayúscula en Galerys, que refleja el nombre de la propiedad en la clase Product
+                .FirstOrDefault(p => p.Id == productId);
         }
 
 
 
         public Product ActualizarProduct(int productId, Product productActualizado)
         {
+            // Verifica si la nueva categoría ya existe en la base de datos.
+            var existingCategory = _context.Category.FirstOrDefault(c => c.titles == productActualizado.category.titles);
+
+            if (existingCategory != null)
+            {
+                // La nueva categoría ya existe, asocia el producto actualizado con la nueva categoría.
+                productActualizado.category = existingCategory;
+            }
+            else
+            {
+                // La nueva categoría no existe, crea una nueva categoría y asocia el producto actualizado con ella.
+                _context.Category.Add(productActualizado.category);
+            }
+
             var productExistente = _context.Product
                 .FirstOrDefault(p => p.Id == productId);
 

@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using api_ecommerce_v1.Errors;
 using Microsoft.EntityFrameworkCore;
 using api_ecommerce_v1.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace api_ecommerce_v1.Controllers
 {
@@ -26,6 +27,7 @@ namespace api_ecommerce_v1.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult GetAllProducts()
         {
             var products = _productService.ObtenerTodosLosProdcuts();
@@ -33,6 +35,7 @@ namespace api_ecommerce_v1.Controllers
         }
 
         [HttpGet("public")]
+        [AllowAnonymous]
         public IActionResult GetAllProductsPublic()
         {
             var products = _productService.ObtenerTodosLosProdcutsPublic();
@@ -40,6 +43,7 @@ namespace api_ecommerce_v1.Controllers
         }
 
         [HttpGet("{id}")]
+        [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult GetProductById(int id)
         {
             var product = _productService.ObtenerProductPorId(id);
@@ -58,7 +62,28 @@ namespace api_ecommerce_v1.Controllers
             return Ok(product);
         }
 
+        [HttpGet("public/{id}")]
+        [AllowAnonymous]
+        public IActionResult GetProductByIdPublic(int id)
+        {
+            var product = _productService.ObtenerProductPorIdPublic(id);
+
+            if (product == null)
+            {
+                var errorResponse = new
+                {
+                    mensaje = "Producto no encontrado."
+                };
+
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return NotFound(jsonResponse);
+            }
+
+            return Ok(product);
+        }
+
         [HttpPost]
+        [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public async Task<IActionResult> CreateProduct([FromForm] Product product, IFormFile imageFile)
         {
             if (imageFile != null)
@@ -90,6 +115,7 @@ namespace api_ecommerce_v1.Controllers
 
 
         [HttpPut("{id}")]
+        [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public async Task<IActionResult> UpdateProduct([FromForm] Product product, int id, IFormFile imageFile)
         {
             if (imageFile != null)
@@ -130,6 +156,7 @@ namespace api_ecommerce_v1.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = _productService.ObtenerProductPorId(id);

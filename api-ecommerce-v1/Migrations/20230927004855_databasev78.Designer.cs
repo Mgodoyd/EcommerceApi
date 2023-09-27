@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api_ecommerce_v1;
 
@@ -11,9 +12,11 @@ using api_ecommerce_v1;
 namespace api_ecommerce_v1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230927004855_databasev78")]
+    partial class databasev78
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,7 +126,8 @@ namespace api_ecommerce_v1.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("productId");
+                    b.HasIndex("productId")
+                        .IsUnique();
 
                     b.ToTable("Galery");
                 });
@@ -300,8 +304,8 @@ namespace api_ecommerce_v1.Migrations
             modelBuilder.Entity("api_ecommerce_v1.Models.Galery", b =>
                 {
                     b.HasOne("api_ecommerce_v1.Models.Product", "product")
-                        .WithMany("Galerys")
-                        .HasForeignKey("productId")
+                        .WithOne("galerys")
+                        .HasForeignKey("api_ecommerce_v1.Models.Galery", "productId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -345,7 +349,7 @@ namespace api_ecommerce_v1.Migrations
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Product", b =>
                 {
-                    b.Navigation("Galerys");
+                    b.Navigation("galerys");
                 });
 #pragma warning restore 612, 618
         }
