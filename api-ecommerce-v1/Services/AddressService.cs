@@ -55,13 +55,30 @@ namespace api_ecommerce_v1.Services
 
         public Address ObtenerAddressPorId(int addressId)
         {
-            var address = _context.Address.Include(a => a.users).FirstOrDefault(a => a.Id == addressId);
+            var address = _context.Address.Include(a => a.user).FirstOrDefault(a => a.Id == addressId);
             return address;
+        }
+
+        public Address ObtenerAddressPorUser(int userId)
+        {
+            var address = _context.Address.Include(a => a.user).Where(a => a.main == true).FirstOrDefault(a => a.userId == userId);
+            return address;
+        }
+
+        public List<Address> ObtenerAddressPorUsuario(int userId)
+        {
+            // Tu lógica para obtener todos los elementos del carrito asociados al usuario
+            var addressDelUsuario = _context.Address
+                .Include(c => c.user)
+                .Where(c => c.userId == userId)
+                .ToList();
+
+            return addressDelUsuario;
         }
 
         public List<Address> ObtenerTodoslasAddress()
         {
-            var address = _context.Address.Include(a => a.users).ToList();
+            var address = _context.Address.Include(a => a.user).ToList();
             return address;
         }
     }

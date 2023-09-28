@@ -44,7 +44,8 @@ namespace api_ecommerce_v1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("dpi")
+                    b.Property<int?>("dpi")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<bool>("main")
@@ -380,13 +381,13 @@ namespace api_ecommerce_v1.Migrations
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Address", b =>
                 {
-                    b.HasOne("api_ecommerce_v1.Models.User", "users")
+                    b.HasOne("api_ecommerce_v1.Models.User", "user")
                         .WithMany()
                         .HasForeignKey("userId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("users");
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Cart", b =>

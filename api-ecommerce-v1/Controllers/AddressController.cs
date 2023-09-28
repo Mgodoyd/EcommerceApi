@@ -44,6 +44,44 @@ namespace api_ecommerce_v1.Controllers
             return Ok(address);
         }
 
+        [HttpGet("address/{id}")]
+        public IActionResult GetAddressByUser(int id)
+        {
+            var address = _addressService.ObtenerAddressPorUser(id);
+
+            if (address == null)
+            {
+                var errorResponse = new
+                {
+                    mensaje = "Dirección no encontrada."
+                };
+
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return NotFound(jsonResponse);
+            }
+
+            return Ok(address);
+        }
+
+        [HttpGet("user/{userId}")]
+        public IActionResult GetAddressByUserId(int userId)
+        {
+            var address = _addressService.ObtenerAddressPorUsuario(userId);
+
+            if (address == null)
+            {
+                var errorResponse = new
+                {
+                    mensaje = "Dirección no encontrada."
+                };
+
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return NotFound(jsonResponse);
+            }
+
+            return Ok(address);
+        }
+
         [HttpPost]
         public IActionResult CreateAddress( Address address)
         {

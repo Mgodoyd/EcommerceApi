@@ -49,7 +49,7 @@ namespace api_ecommerce_v1.Models
 
         // Propiedad de navegación para la relación con Login
         public int LoginId { get; set; }
-        public Login Login { get; set; }
+        public Login? Login { get; set; }
     }
 
 }
