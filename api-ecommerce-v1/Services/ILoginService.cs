@@ -7,6 +7,5 @@ namespace api_ecommerce_v1.Services
         string Authenticate(Login user, string plainPassword);
         string GenerateJwtToken(Login user);
         bool ValidateToken(string token);
-
     }
 }

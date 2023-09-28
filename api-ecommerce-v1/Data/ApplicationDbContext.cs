@@ -13,6 +13,8 @@ namespace api_ecommerce_v1
         public DbSet<Config> Config { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<Galery> Galery { get; set; }
+        public DbSet<Cart> Cart { get; set; }
+        public DbSet<Address> Address { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

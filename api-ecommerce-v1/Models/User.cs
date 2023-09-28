@@ -7,7 +7,6 @@ namespace api_ecommerce_v1.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-
         public int Id { get; set; }
 
         [Required(ErrorMessage = "El campo 'name' es requerido.")]

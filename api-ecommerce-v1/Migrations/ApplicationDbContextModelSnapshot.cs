@@ -22,6 +22,81 @@ namespace api_ecommerce_v1.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("api_ecommerce_v1.Models.Address", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("addressee")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("country")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("createdDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("dpi")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("main")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("phone")
+                        .HasColumnType("int");
+
+                    b.Property<int>("userId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("zip")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("Address");
+                });
+
+            modelBuilder.Entity("api_ecommerce_v1.Models.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("amount")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("createdDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("productId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("userId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("productId");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("Cart");
+                });
+
             modelBuilder.Entity("api_ecommerce_v1.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -191,6 +266,9 @@ namespace api_ecommerce_v1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CartId")
+                        .HasColumnType("int");
+
                     b.Property<int>("categoryId")
                         .HasColumnType("int");
 
@@ -223,10 +301,6 @@ namespace api_ecommerce_v1.Migrations
                     b.Property<int>("sales")
                         .HasColumnType("int");
 
-                    b.Property<string>("slug")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("state")
                         .HasColumnType("nvarchar(max)");
 
@@ -239,6 +313,8 @@ namespace api_ecommerce_v1.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CartId");
 
                     b.HasIndex("categoryId");
 
@@ -255,6 +331,9 @@ namespace api_ecommerce_v1.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CartId")
+                        .HasColumnType("int");
 
                     b.Property<int>("LoginId")
                         .HasColumnType("int");
@@ -292,9 +371,41 @@ namespace api_ecommerce_v1.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CartId");
+
                     b.HasIndex("LoginId");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("api_ecommerce_v1.Models.Address", b =>
+                {
+                    b.HasOne("api_ecommerce_v1.Models.User", "users")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("users");
+                });
+
+            modelBuilder.Entity("api_ecommerce_v1.Models.Cart", b =>
+                {
+                    b.HasOne("api_ecommerce_v1.Models.Product", "products")
+                        .WithMany()
+                        .HasForeignKey("productId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api_ecommerce_v1.Models.User", "users")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("products");
+
+                    b.Navigation("users");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Galery", b =>
@@ -310,6 +421,10 @@ namespace api_ecommerce_v1.Migrations
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Product", b =>
                 {
+                    b.HasOne("api_ecommerce_v1.Models.Cart", null)
+                        .WithMany("product")
+                        .HasForeignKey("CartId");
+
                     b.HasOne("api_ecommerce_v1.Models.Category", "category")
                         .WithMany()
                         .HasForeignKey("categoryId")
@@ -329,6 +444,10 @@ namespace api_ecommerce_v1.Migrations
 
             modelBuilder.Entity("api_ecommerce_v1.Models.User", b =>
                 {
+                    b.HasOne("api_ecommerce_v1.Models.Cart", null)
+                        .WithMany("user")
+                        .HasForeignKey("CartId");
+
                     b.HasOne("api_ecommerce_v1.Models.Login", "Login")
                         .WithMany()
                         .HasForeignKey("LoginId")
@@ -336,6 +455,13 @@ namespace api_ecommerce_v1.Migrations
                         .IsRequired();
 
                     b.Navigation("Login");
+                });
+
+            modelBuilder.Entity("api_ecommerce_v1.Models.Cart", b =>
+                {
+                    b.Navigation("product");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Inventory", b =>

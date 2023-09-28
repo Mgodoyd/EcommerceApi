@@ -26,6 +26,8 @@ builder.Services.AddScoped<ICoupon, CouponService>();
 builder.Services.AddScoped<IConfig, ConfigService>();
 builder.Services.AddScoped<ICategory, CategoryService>();
 builder.Services.AddScoped<IGalery, GaleryService>();
+builder.Services.AddScoped<ICart, CartService>();
+builder.Services.AddScoped<IAddress, AddressService>();
 builder.Services.AddScoped<JwtAuthorizationFilter>();
 builder.Services.AddScoped<Jwthelper>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

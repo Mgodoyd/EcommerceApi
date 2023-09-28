@@ -14,13 +14,6 @@ namespace api_ecommerce_v1.Models
         [StringLength(50)]
         [NotNumeric(ErrorMessage = "El campo 'titulo' no debe contener números.")]
         public string title { get; set; }
-
-
-       // [Required(ErrorMessage = "El campo 'slug ' es requerido.")]
-        [StringLength(50)]
-        [NotNumeric(ErrorMessage = "El campo 'slug' no debe contener números.")]
-        public string? slug { get; set; }
-
         public string? frontpage { get; set; }
 
         [NotMapped]

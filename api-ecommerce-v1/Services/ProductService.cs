@@ -103,7 +103,6 @@ namespace api_ecommerce_v1.Services
 
             // Actualiza las propiedades de User
             productExistente.title = productActualizado.title;
-            productExistente.slug = productActualizado.slug;
             productExistente.frontpage = productActualizado.frontpage;
             productExistente.price = productActualizado.price;
             productExistente.description = productActualizado.description;
