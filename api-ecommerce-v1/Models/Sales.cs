@@ -9,11 +9,6 @@ namespace api_ecommerce_v1.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "El campo 'nsale' es requerido.")]
-        [StringLength(50)]
-        [NotNumeric(ErrorMessage = "El campo 'nsale' no debe contener números.")]
-        public string nsale { get; set; }
-
         [Required(ErrorMessage = "El campo 'subtotal' es requerido.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'subtotal' debe ser un número.")]
         public int subtotal { get; set; }
@@ -36,13 +31,13 @@ namespace api_ecommerce_v1.Models
         [StringLength(50)]
         public string? coupon { get; set; }
 
-        [Required(ErrorMessage = "El campo 'state' es requerido.")]
+        
         [StringLength(50)]
-        public string state { get; set; }
+        public string? state { get; set; }
 
         [Required(ErrorMessage = "El campo 'note' es requerido.")]
         [StringLength(50)]
-        public string note { get; set; }
+        public string? note { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime createdDate { get; set; }
@@ -59,5 +54,7 @@ namespace api_ecommerce_v1.Models
 
         public int addressId { get; set; }
         public Address? address { get; set; }
+
+        public List<NSale>? nsale { get; set; }
     }
 }
