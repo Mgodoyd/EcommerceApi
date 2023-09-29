@@ -299,12 +299,6 @@ namespace api_ecommerce_v1.Migrations
                     b.Property<int>("price")
                         .HasColumnType("int");
 
-                    b.Property<int>("sales")
-                        .HasColumnType("int");
-
-                    b.Property<string>("state")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("stock")
                         .HasColumnType("int");
 
@@ -323,6 +317,68 @@ namespace api_ecommerce_v1.Migrations
                         .IsUnique();
 
                     b.ToTable("Product");
+                });
+
+            modelBuilder.Entity("api_ecommerce_v1.Models.Sales", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("addressId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("coupon")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("createdDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("envio_price")
+                        .HasColumnType("int");
+
+                    b.Property<string>("envio_title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("note")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("nsale")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("state")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("subtotal")
+                        .HasColumnType("int");
+
+                    b.Property<string>("transaction")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("userId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("addressId");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("Sales");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.User", b =>
@@ -441,6 +497,25 @@ namespace api_ecommerce_v1.Migrations
                     b.Navigation("category");
 
                     b.Navigation("inventory");
+                });
+
+            modelBuilder.Entity("api_ecommerce_v1.Models.Sales", b =>
+                {
+                    b.HasOne("api_ecommerce_v1.Models.Address", "address")
+                        .WithMany()
+                        .HasForeignKey("addressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api_ecommerce_v1.Models.User", "user")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("address");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.User", b =>

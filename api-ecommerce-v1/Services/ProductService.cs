@@ -108,9 +108,9 @@ namespace api_ecommerce_v1.Services
             productExistente.description = productActualizado.description;
             productExistente.content = productActualizado.content;
             productExistente.stock = productActualizado.stock;
-            productExistente.sales = productActualizado.sales;
+          //  productExistente.sales = productActualizado.sales;
             productExistente.points = productActualizado.points;
-            productExistente.state = productActualizado.state;
+           // productExistente.state = productActualizado.state;
             productExistente.category = productActualizado.category;
 
             // Marca la entidad User como modificada
