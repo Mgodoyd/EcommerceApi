@@ -51,6 +51,25 @@ namespace api_ecommerce_v1.Controllers
             return Ok(coupon);
         }
 
+        [HttpGet("validate/{coupon}")]
+        public IActionResult ValidateCoupon(string coupon)
+        {
+            var couponValidado = _couponService.validarCoupon(coupon);
+
+            if (couponValidado == null)
+            {
+                var errorResponse = new
+                {
+                    mensaje = "Cupon no encontrado."
+                };
+
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return NotFound(jsonResponse);
+            }
+
+            return Ok(couponValidado);
+        }
+
         [HttpPut("{id}")]
         public IActionResult UpdateCoupon(int id, Coupon coupon)
         {

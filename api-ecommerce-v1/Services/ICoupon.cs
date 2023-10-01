@@ -13,6 +13,7 @@ namespace api_ecommerce_v1.Services
         // Método para obtener un producto por su ID
         Coupon ObtenerCouponPorId(int couponId);
 
+        Coupon validarCoupon(string code);
         // Método para actualizar información de un producto
         Coupon ActualizarCoupon(int couponId, Coupon couponActualizado);
 

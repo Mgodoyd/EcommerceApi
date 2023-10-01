@@ -28,6 +28,12 @@ namespace api_ecommerce_v1.Services
             return _context.Cupon.FirstOrDefault(p => p.Id == couponId);
         }
 
+        public Coupon validarCoupon(string code)
+        {
+             var coupon = _context.Cupon.Where(c => c.limit >= 1).FirstOrDefault(p => p.code == code);
+            return coupon;
+        }
+
         public Coupon ActualizarCoupon(int couponId, Coupon couponActualizado)
         {
             var couponExistente = _context.Cupon
