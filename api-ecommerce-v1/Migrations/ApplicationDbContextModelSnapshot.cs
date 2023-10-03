@@ -311,7 +311,7 @@ namespace api_ecommerce_v1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("SalesId")
+                    b.Property<int>("SalesId")
                         .HasColumnType("int");
 
                     b.Property<int>("amount")
@@ -334,7 +334,7 @@ namespace api_ecommerce_v1.Migrations
 
                     b.HasIndex("SalesId");
 
-                    b.ToTable("NSale");
+                    b.ToTable("NSales");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Product", b =>
@@ -560,9 +560,13 @@ namespace api_ecommerce_v1.Migrations
 
             modelBuilder.Entity("api_ecommerce_v1.Models.NSale", b =>
                 {
-                    b.HasOne("api_ecommerce_v1.Models.Sales", null)
+                    b.HasOne("api_ecommerce_v1.Models.Sales", "sales")
                         .WithMany("nsale")
-                        .HasForeignKey("SalesId");
+                        .HasForeignKey("SalesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("sales");
                 });
 
             modelBuilder.Entity("api_ecommerce_v1.Models.Product", b =>

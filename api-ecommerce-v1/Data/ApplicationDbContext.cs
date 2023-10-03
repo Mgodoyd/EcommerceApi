@@ -16,7 +16,7 @@ namespace api_ecommerce_v1
         public DbSet<Cart> Cart { get; set; }
         public DbSet<Address> Address { get; set; }
         public DbSet<Sales> Sales { get; set; }
-        public DbSet<NSale> NSale { get; set; }
+        public DbSet<NSale> NSales { get; set; }
         public DbSet<Contact> Contact { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -39,6 +39,10 @@ namespace api_ecommerce_v1
                 .HasOne(p => p.category)
                 .WithMany()*
                 .HasForeignKey(p => p.categoryId);*/
+            modelBuilder.Entity<Sales>()
+               .HasMany(s => s.nsale)
+               .WithOne(ns => ns.sales)
+               .HasForeignKey(ns => ns.SalesId);
 
 
         }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace api_ecommerce_v1.Models
 {
@@ -55,6 +56,7 @@ namespace api_ecommerce_v1.Models
         public int addressId { get; set; }
         public Address? address { get; set; }
 
+        
         public List<NSale>? nsale { get; set; }
     }
 }

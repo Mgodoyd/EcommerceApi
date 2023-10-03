@@ -13,9 +13,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer("name=ConnectionStrings:azureDBConnect"));
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["RedisConnectionStrin"];
+    options.InstanceName = builder.Configuration["Redis:storeweb"];
+});
+
 
 // Add services to the container.
- 
+
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
@@ -50,7 +56,6 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
 });
-
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

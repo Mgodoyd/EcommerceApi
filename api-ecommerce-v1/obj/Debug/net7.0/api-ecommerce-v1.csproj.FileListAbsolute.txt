@@ -83,3 +83,10 @@ C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\B
 C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Azure.Storage.Blobs.dll
 C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Azure.Storage.Common.dll
 C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\System.IO.Hashing.dll
+C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Microsoft.Extensions.Caching.Redis.dll
+C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Microsoft.Extensions.Caching.StackExchangeRedis.dll
+C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Microsoft.Extensions.Options.dll
+C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\Pipelines.Sockets.Unofficial.dll
+C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\StackExchange.Redis.dll
+C:\Users\godoy\OneDrive\Escritorio\OctavoSemestre\Desarrollo Web\ProyectoFinal\Backend\api-ecommerce-v1\api-ecommerce-v1\bin\Debug\net7.0\StackExchange.Redis.StrongName.dll

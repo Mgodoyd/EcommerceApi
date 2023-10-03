@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace api_ecommerce_v1.Models
 {
@@ -28,9 +29,14 @@ namespace api_ecommerce_v1.Models
         }
 
         public int productId { get; set; }
-        public List<Product>? products { get; set; }
+        public Product? products { get; set; }
 
         public int userId { get; set; }
         public List<User>? users { get; set; }
+
+        public int SalesId { get; set; }
+
+        [JsonIgnore]
+        public Sales? sales { get; set; }
     }
 }

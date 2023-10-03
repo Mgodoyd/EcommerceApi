@@ -1,4 +1,5 @@
 ﻿using api_ecommerce_v1.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace api_ecommerce_v1.Services
 {
@@ -13,38 +14,95 @@ namespace api_ecommerce_v1.Services
 
         public Sales ObtenerSalePorId(int saleId)
         {
-               return _context.Sales.FirstOrDefault(s => s.Id == saleId);
+            var sale = _context.Sales
+                .Include(s => s.user)
+                .Include(s => s.address)
+                .Include(s => s.nsale)
+                .ThenInclude(n => n.products) // Incluir la información de productos relacionados
+                .FirstOrDefault(s => s.Id == saleId);
+
+            return sale;
         }
+
+
+        public List<Sales> ObtenerVentasPorUserId(int userId)
+        {
+            return _context.Sales.Where(s => s.userId == userId).ToList();
+        }
+
 
         public List<Sales> ObtenerTodoslasSale()
         {
-            return _context.Sales.ToList();
+            return _context.Sales.Include(s => s.user).ToList();
         }
+
+        public int ObtenerTotaldeSalesGeneral()
+        {
+            var sales = _context.Sales.ToList();
+            var total = 0;
+
+            foreach (var sale in sales)
+            {
+                total += sale.subtotal;
+            }
+
+            return total;
+        }
+
+        public int ObtenerTotaldeSalesVendido()
+        {
+            var sales = _context.Sales.Where(s => s.state == "Entregado").ToList();
+            var total = sales.Count;
+            
+            return total;
+        }
+
+        public int ObtenerTotaldeSalesTotal()
+        {
+            var sales = _context.Sales.ToList();
+            var total = sales.Count;
+
+            return total;
+        }
+
 
         public Sales CrearSale(Sales sale)
         {
-            foreach (var nsaleItem in sale.nsale)
+            if (sale == null)
             {
-                int productId = nsaleItem.productId;
+                throw new ArgumentNullException(nameof(sale), "La entidad Sale no puede ser nula.");
+            }
 
-                // Buscar el producto por su ID
-                var product = _context.Product.FirstOrDefault(p => p.Id == productId);
-
-                if (product != null)
+            if (sale.nsale != null)
+            {
+                foreach (var nsaleItem in sale.nsale)
                 {
-                    // Restar el stock en función de la cantidad en NSale (amount)
-                    product.stock -= nsaleItem.amount;
+                    // Supongo que nsaleItem.productId es el ID del producto
+                    int productId = nsaleItem.productId;
 
-                    // Asegúrate de validar que el stock no sea negativo aquí
-                    if (product.stock < 0)
+                    // Busca el producto por su ID
+                    var product = _context.Product.FirstOrDefault(p => p.Id == productId);
+
+                    if (product != null)
                     {
-                        throw new InvalidOperationException("No hay suficientes productos disponibles en el stock.");
+                        // Resta el stock en función de la cantidad en NSale (amount)
+                        product.stock -= nsaleItem.amount;
+
+                        // Asegúrate de validar que el stock no sea negativo aquí
+                        if (product.stock < 0)
+                        {
+                            throw new InvalidOperationException("No hay suficientes productos disponibles en el stock.");
+                        }
+                    }
+                    else
+                    {
+                        throw new NullReferenceException($"El producto con ID {productId} no se encuentra en la tabla Product.");
                     }
                 }
             }
 
             sale.state = "procesando"; // Establece el estado en "procesando"
-            _context.Sales.Add(sale); // Agrega la entidad al contexto
+            _context.Sales.Add(sale); // Agrega la entidad Sale al contexto
             _context.SaveChanges(); // Guarda los cambios en la base de datos
 
             var deleteCart = _context.Cart.Where(c => c.userId == sale.userId).ToList();
@@ -55,14 +113,13 @@ namespace api_ecommerce_v1.Services
         }
 
 
-
         public Sales ActualizarSale(int saleId, Sales saleActualizado)
         {
             var sale = _context.Sales.FirstOrDefault(s => s.Id == saleId);
             if (sale != null)
             {
                 sale.state = saleActualizado.state;
-                sale.nsale = saleActualizado.nsale;
+               // sale.nsale = saleActualizado.nsale;
                 sale.userId = saleActualizado.userId;
                 sale.addressId = saleActualizado.addressId;
                 sale.subtotal = saleActualizado.subtotal;

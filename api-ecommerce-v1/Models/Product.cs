@@ -52,10 +52,12 @@ namespace api_ecommerce_v1.Models
         //        [Required(ErrorMessage = "El campo 'product' es requerido.")]
 
         public int inventoryId { get; set; }
+
         [JsonIgnore]
         public Inventory? inventory { get; set; }
 
         public int categoryId { get; set; }
+
 
         public Category? category { get; set; }
 

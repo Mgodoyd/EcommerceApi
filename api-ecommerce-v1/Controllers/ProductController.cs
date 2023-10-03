@@ -6,6 +6,8 @@ using api_ecommerce_v1.Errors;
 using Microsoft.EntityFrameworkCore;
 using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text;
 
 namespace api_ecommerce_v1.Controllers
 {
@@ -18,69 +20,170 @@ namespace api_ecommerce_v1.Controllers
         private readonly IProductService _productService;
         private readonly IProductBlobConfiguration _productBlobConfiguration;
         private readonly ApplicationDbContext _context;
+        private readonly IDistributedCache _distributedCache;
 
-        public ProductController(IProductService productService, IProductBlobConfiguration productBlobConfiguration, ApplicationDbContext context)
+        public ProductController(IProductService productService, IProductBlobConfiguration productBlobConfiguration, ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _productService = productService;
             _productBlobConfiguration = productBlobConfiguration;
             _context = context;
+            _distributedCache = distributedCache;
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult GetAllProducts()
         {
-            var products = _productService.ObtenerTodosLosProdcuts();
-            return Ok(products);
+            var cacheKey = "AllProducts";
+            var cachedProducts = _distributedCache.Get(cacheKey);
+
+            if (cachedProducts != null)
+            {
+                var products = JsonConvert.DeserializeObject<List<Product>>(Encoding.UTF8.GetString(cachedProducts));
+                return Ok(products);
+            }
+            else
+            {
+                var products = _productService.ObtenerTodosLosProdcuts();
+                var settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                };
+
+                var serializedProducts = JsonConvert.SerializeObject(products, settings);
+
+                var encodedProducts = Encoding.UTF8.GetBytes(serializedProducts);
+
+                _distributedCache.Set(cacheKey, encodedProducts, new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                });
+
+                return Ok(products);
+            }
         }
 
         [HttpGet("public")]
         [AllowAnonymous]
         public IActionResult GetAllProductsPublic()
         {
-            var products = _productService.ObtenerTodosLosProdcutsPublic();
-            return Ok(products);
+            var cacheKey = "AllProductsPublic";
+            var cachedProducts = _distributedCache.Get(cacheKey);
+
+            if (cachedProducts != null)
+            {
+                var products = JsonConvert.DeserializeObject<List<Product>>(Encoding.UTF8.GetString(cachedProducts));
+                return Ok(products);
+            }
+            else
+            {
+                var products = _productService.ObtenerTodosLosProdcutsPublic();
+
+                if (products.Count > 0)
+                {
+                    var settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    };
+
+                    var serializedProducts = JsonConvert.SerializeObject(products, settings);
+                    var cacheEntryOptions = new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    };
+                    _distributedCache.Set(cacheKey, Encoding.UTF8.GetBytes(serializedProducts), cacheEntryOptions);
+                    return Ok(products);
+                }
+                else
+                {
+                    return NoContent();
+                }
+            }
         }
 
         [HttpGet("{id}")]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult GetProductById(int id)
         {
-            var product = _productService.ObtenerProductPorId(id);
+            var cacheKey = $"ProductById_{id}";
+            var cachedProduct = _distributedCache.Get(cacheKey);
 
-            if (product == null)
+            if (cachedProduct != null)
             {
-                var errorResponse = new
+                var product = JsonConvert.DeserializeObject<Product>(Encoding.UTF8.GetString(cachedProduct));
+                return Ok(product);
+            }
+            else
+            {
+                var product = _productService.ObtenerProductPorId(id);
+
+                if (product == null)
                 {
-                    mensaje = "Producto no encontrado."
+                    var errorResponse = new
+                    {
+                        mensaje = "Producto no encontrado."
+                    };
+
+                    var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                    return NotFound(jsonResponse);
+                }
+
+                var settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 };
 
-                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
-                return NotFound(jsonResponse);
+                var serializedProducts = JsonConvert.SerializeObject(product, settings);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+                _distributedCache.Set(cacheKey, Encoding.UTF8.GetBytes(serializedProducts), cacheEntryOptions);
+                return Ok(product);
             }
-
-            return Ok(product);
         }
 
         [HttpGet("public/{id}")]
         [AllowAnonymous]
         public IActionResult GetProductByIdPublic(int id)
         {
-            var product = _productService.ObtenerProductPorIdPublic(id);
+            var cacheKey = $"ProductByIdPublic_{id}";
+            var cachedProduct = _distributedCache.Get(cacheKey);
 
-            if (product == null)
+            if (cachedProduct != null)
             {
-                var errorResponse = new
+                var product = JsonConvert.DeserializeObject<Product>(Encoding.UTF8.GetString(cachedProduct));
+                return Ok(product);
+            }
+            else
+            {
+                var product = _productService.ObtenerProductPorIdPublic(id);
+
+                if (product == null)
                 {
-                    mensaje = "Producto no encontrado."
+                    var errorResponse = new
+                    {
+                        mensaje = "Producto no encontrado."
+                    };
+
+                    var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                    return NotFound(jsonResponse);
+                }
+
+                var settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 };
 
-                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
-                return NotFound(jsonResponse);
+                var serializedProducts = JsonConvert.SerializeObject(product, settings);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+                _distributedCache.Set(cacheKey, Encoding.UTF8.GetBytes(serializedProducts), cacheEntryOptions);
+                return Ok(product);
             }
-
-            return Ok(product);
         }
+
 
         [HttpPost]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
