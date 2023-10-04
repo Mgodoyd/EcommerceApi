@@ -45,7 +45,7 @@ namespace api_ecommerce_v1.Controllers
                 // Almacena los datos en la caché con una expiración de 5 minutos (por ejemplo)
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
 
                 _distributedCache.SetString("SalesData", serializedData, cacheOptions);
@@ -132,7 +132,7 @@ namespace api_ecommerce_v1.Controllers
                 // Almacena el total de ventas en la caché con una expiración de 5 minutos (por ejemplo)
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
 
                 _distributedCache.SetString("TotalSales", serializedTotalSales, cacheOptions);
@@ -260,7 +260,7 @@ namespace api_ecommerce_v1.Controllers
                 var serializedSales = JsonConvert.SerializeObject(sales);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
                 _distributedCache.Set(cacheKey, Encoding.UTF8.GetBytes(serializedSales), cacheEntryOptions);
                 return Ok(sales);

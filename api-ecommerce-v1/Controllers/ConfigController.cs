@@ -4,6 +4,7 @@ using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
 namespace api_ecommerce_v1.Controllers
@@ -16,11 +17,13 @@ namespace api_ecommerce_v1.Controllers
         private readonly IConfig _configService;
         private readonly ICategory _categoryService;
         private readonly IProductBlobConfiguration _productBlobConfiguration;
-        public ConfigController( IConfig configService, ICategory categoryService, IProductBlobConfiguration productBlobConfiguration)
+        private readonly IDistributedCache _distributedCache;
+        public ConfigController( IConfig configService, ICategory categoryService, IProductBlobConfiguration productBlobConfiguration, IDistributedCache distributedCache)
         {
             _configService = configService;
             _categoryService = categoryService;
             _productBlobConfiguration = productBlobConfiguration;
+            _distributedCache = distributedCache;
         }
 
         [HttpPut("{id}")]
@@ -53,21 +56,41 @@ namespace api_ecommerce_v1.Controllers
         [HttpGet("{id}")]
         public IActionResult GetConfigById(int id)
         {
-            var config = _configService.ObtenerConfyporId(id);
+            var cacheKey = $"Config_{id}";
+            var cachedConfig = _distributedCache.GetString(cacheKey);
 
-            if (config == null)
+            if (cachedConfig != null)
             {
-                var errorResponse = new
+                var config = JsonConvert.DeserializeObject<Config>(cachedConfig);
+                return Ok(config);
+            }
+            else
+            {
+                var config = _configService.ObtenerConfyporId(id);
+
+                if (config == null)
                 {
-                    mensaje = "Config no encontrado."
+                    var errorResponse = new
+                    {
+                        mensaje = "Config no encontrado."
+                    };
+
+                    var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                    return NotFound(jsonResponse);
+                }
+
+                var serializedConfig = JsonConvert.SerializeObject(config);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
 
-                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
-                return NotFound(jsonResponse);
-            }
+                _distributedCache.SetString(cacheKey, serializedConfig, cacheEntryOptions);
 
-            return Ok(config);
+                return Ok(config);
+            }
         }
+
 
 
         [HttpPost]

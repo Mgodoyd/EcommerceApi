@@ -2,6 +2,7 @@
 using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
 namespace api_ecommerce_v1.Controllers
@@ -14,32 +15,57 @@ namespace api_ecommerce_v1.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IGalery _galeryService;
         private readonly IProductBlobConfiguration _productBlobConfiguration;
+        private readonly IDistributedCache _distributedCache;
 
-        public GaleryController(ApplicationDbContext context, IGalery galeryService, IProductBlobConfiguration productBlobConfiguration)
+        public GaleryController(ApplicationDbContext context, IGalery galeryService, IProductBlobConfiguration productBlobConfiguration, IDistributedCache distributedCache)
         {
             _context = context;
             _galeryService = galeryService;
             _productBlobConfiguration = productBlobConfiguration;
+            _distributedCache = distributedCache;
         }
 
         [HttpGet("{galeryId}")]
         public IActionResult GetGaleryById(int galeryId)
         {
-            var galery = _galeryService.ObtenerGaleryPorProductId(galeryId);
+            var cacheKey = $"GaleryById_{galeryId}";
+            var cachedGalery = _distributedCache.GetString(cacheKey);
 
-            if (galery == null)
+            if (cachedGalery != null)
             {
-                var errorResponse = new
-                {
-                    mensaje = "Galeria no encontrada."
-                };
-
-                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
-                return NotFound(jsonResponse);
+                // Deserializa el JSON como una lista de galería
+                var galery = JsonConvert.DeserializeObject<List<Galery>>(cachedGalery);
+                return Ok(galery);
             }
+            else
+            {
+                // Si no se encuentra en caché, obtén la galería y almacénala en caché
+                var galery = _galeryService.ObtenerGaleryPorProductId(galeryId);
 
-            return Ok(galery);
+                if (galery == null)
+                {
+                    var errorResponse = new
+                    {
+                        mensaje = "Galeria no encontrada."
+                    };
+
+                    var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                    return NotFound(jsonResponse);
+                }
+
+                // Serializa la galería y almacénala en caché
+                var serializedGalery = JsonConvert.SerializeObject(galery);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+                _distributedCache.SetString(cacheKey, serializedGalery, cacheEntryOptions);
+
+                return Ok(galery);
+            }
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> CreateGalery([FromForm] Galery galery, IFormFile imageFile)

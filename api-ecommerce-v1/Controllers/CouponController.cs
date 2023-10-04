@@ -2,6 +2,7 @@
 using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
 namespace api_ecommerce_v1.Controllers
@@ -12,37 +13,88 @@ namespace api_ecommerce_v1.Controllers
     public class CouponController : ControllerBase
     {
         private readonly ICoupon _couponService;
+        private readonly IDistributedCache _distributedCache;
 
-        public CouponController(ICoupon couponService)
+        public CouponController(ICoupon couponService, IDistributedCache distributedCache)
         {
             _couponService = couponService;
+            _distributedCache = distributedCache;
         }
 
         [HttpGet]
         public IActionResult GetAllCoupon()
         {
-            var coupons = _couponService.ObtenerTodosCoupon();
-            return Ok(coupons);
+            var cacheKey = "AllCoupons";
+            var cachedCoupons = _distributedCache.GetString(cacheKey);
+
+            if (cachedCoupons != null)
+            {
+                var coupons = JsonConvert.DeserializeObject<List<Coupon>>(cachedCoupons);
+                return Ok(coupons);
+            }
+            else
+            {
+                var coupons = _couponService.ObtenerTodosCoupon();
+
+                if (coupons == null || coupons.Count == 0)
+                {
+                    var errorResponse = new
+                    {
+                        mensaje = "No se encontraron cupones."
+                    };
+
+                    return NotFound(errorResponse);
+                }
+
+                var serializedCoupons = JsonConvert.SerializeObject(coupons);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                };
+
+                _distributedCache.SetString(cacheKey, serializedCoupons, cacheEntryOptions);
+
+                return Ok(coupons);
+            }
         }
 
         [HttpGet("{id}")]
         public IActionResult GetCouponById(int id)
         {
-            var coupon = _couponService.ObtenerCouponPorId(id);
+            var cacheKey = $"Coupon_{id}";
+            var cachedCoupon = _distributedCache.GetString(cacheKey);
 
-            if (coupon == null)
+            if (cachedCoupon != null)
             {
-                var errorResponse = new
+                var coupon = JsonConvert.DeserializeObject<Coupon>(cachedCoupon);
+                return Ok(coupon);
+            }
+            else
+            {
+                var coupon = _couponService.ObtenerCouponPorId(id);
+
+                if (coupon == null)
                 {
-                    mensaje = "Cupon no encontrado."
+                    var errorResponse = new
+                    {
+                        mensaje = "Cupon no encontrado."
+                    };
+
+                    return NotFound(errorResponse);
+                }
+
+                var serializedCoupon = JsonConvert.SerializeObject(coupon);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
 
-                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
-                return NotFound(jsonResponse);
-            }
+                _distributedCache.SetString(cacheKey, serializedCoupon, cacheEntryOptions);
 
-            return Ok(coupon);
+                return Ok(coupon);
+            }
         }
+
 
         [HttpPost]
         public IActionResult CreateCoupon(Coupon coupon)
@@ -54,20 +106,38 @@ namespace api_ecommerce_v1.Controllers
         [HttpGet("validate/{coupon}")]
         public IActionResult ValidateCoupon(string coupon)
         {
-            var couponValidado = _couponService.validarCoupon(coupon);
+            var cacheKey = $"ValidatedCoupon_{coupon}";
+            var cachedValidatedCoupon = _distributedCache.GetString(cacheKey);
 
-            if (couponValidado == null)
+            if (cachedValidatedCoupon != null)
             {
-                var errorResponse = new
+                var validatedCoupon = JsonConvert.DeserializeObject<Coupon>(cachedValidatedCoupon);
+                return Ok(validatedCoupon);
+            }
+            else
+            {
+                var validatedCoupon = _couponService.validarCoupon(coupon);
+
+                if (validatedCoupon == null)
                 {
-                    mensaje = "Cupon no encontrado."
+                    var errorResponse = new
+                    {
+                        mensaje = "Cupon no encontrado."
+                    };
+
+                    return NotFound(errorResponse);
+                }
+
+                var serializedValidatedCoupon = JsonConvert.SerializeObject(validatedCoupon);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
 
-                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
-                return NotFound(jsonResponse);
-            }
+                _distributedCache.SetString(cacheKey, serializedValidatedCoupon, cacheEntryOptions);
 
-            return Ok(couponValidado);
+                return Ok(validatedCoupon);
+            }
         }
 
         [HttpPut("{id}")]

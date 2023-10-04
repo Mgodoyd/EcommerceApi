@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using api_ecommerce_v1.helpers;
 using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace api_ecommerce_v1.Controllers
 {
@@ -19,65 +20,130 @@ namespace api_ecommerce_v1.Controllers
         private readonly ILoginService _loginService;
         private readonly ApplicationDbContext _context; 
         public IConfiguration _configuration;
+        private readonly IDistributedCache _distributedCache;
 
-        public UserController(IUserService userService, Jwthelper jwtHelper, ILoginService loginService, ApplicationDbContext context, IConfiguration configuration)
+        public UserController(IUserService userService, Jwthelper jwtHelper, ILoginService loginService, ApplicationDbContext context, IConfiguration configuration, IDistributedCache distributedCache)
         {
             _userService = userService;
             _jwtHelper = jwtHelper;
             _loginService = loginService;
             _context = context;
             _configuration = configuration;
+            _distributedCache = distributedCache;
         }
-
 
         [HttpGet]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult GetAllUser()
         {
-            var clients = _userService.ObtenerTodosLosUser();
-            return Ok(clients);
+            var cacheKey = "AllUsers";
+            var cachedUsers = _distributedCache.GetString(cacheKey);
+
+            if (cachedUsers != null)
+            {
+                var users = JsonConvert.DeserializeObject<List<User>>(cachedUsers);
+                return Ok(users);
+            }
+            else
+            {
+                var users = _userService.ObtenerTodosLosUser();
+
+                if (users == null)
+                {
+                    var errorResponse = new
+                    {
+                        mensaje = "Usuarios no encontrados."
+                    };
+
+                    var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                    return NotFound(jsonResponse);
+                }
+
+                var serializedUsers = JsonConvert.SerializeObject(users);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+                _distributedCache.SetString(cacheKey, serializedUsers, cacheEntryOptions);
+
+                return Ok(users);
+            }
         }
 
         [HttpGet("admin/{id}")]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
-        public IActionResult  ObtenerUserAdminPorId(int id)
+        public IActionResult ObtenerUserAdminPorId(int id)
         {
-            var users = _userService.ObtenerUserAdminPorId(id);
+            var cacheKey = $"UserAdminById_{id}";
+            var cachedUser = _distributedCache.GetString(cacheKey);
 
-            if (users == null)
+            if (cachedUser != null)
             {
-                var errorResponse = new
-                {
-                    mensaje = "User no encontrado."
-                };
-
-                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
-                return NotFound(jsonResponse);
+                var user = JsonConvert.DeserializeObject<User>(cachedUser);
+                return Ok(user);
             }
+            else
+            {
+                var user = _userService.ObtenerUserAdminPorId(id);
 
-            return Ok(users);
+                if (user == null)
+                {
+                    var errorResponse = new
+                    {
+                        mensaje = "Usuario no encontrado."
+                    };
+
+                    var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                    return NotFound(jsonResponse);
+                }
+
+                var serializedUser = JsonConvert.SerializeObject(user);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+                _distributedCache.SetString(cacheKey, serializedUser, cacheEntryOptions);
+
+                return Ok(user);
+            }
         }
 
-        // GET: api/client/{id}
         [HttpGet("{id}")]
         [AllowAnonymous]
         public IActionResult GetUserById(int id)
         {
-            var client = _userService.ObtenerUserPorId(id);
+            var cacheKey = $"UserById_{id}";
+            var cachedUser = _distributedCache.GetString(cacheKey);
 
-            if (client == null)
+            if (cachedUser != null)
             {
-                var errorResponse = new
-                {
-                    mensaje = "Usuario no encontrado."
-                };
-
-                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404
-                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
-                return NotFound(jsonResponse);
+                var user = JsonConvert.DeserializeObject<User>(cachedUser);
+                return Ok(user);
             }
+            else
+            {
+                var user = _userService.ObtenerUserPorId(id);
 
-            return Ok(client);
+                if (user == null)
+                {
+                    var errorResponse = new
+                    {
+                        mensaje = "Usuario no encontrado."
+                    };
+
+                    var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                    return NotFound(jsonResponse);
+                }
+
+                var serializedUser = JsonConvert.SerializeObject(user);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+                _distributedCache.SetString(cacheKey, serializedUser, cacheEntryOptions);
+
+                return Ok(user);
+            }
         }
 
         // POST: api/client

@@ -1,7 +1,8 @@
 ﻿using api_ecommerce_v1.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-
+using System.Security.Cryptography;
+using System.Text;
 
 namespace api_ecommerce_v1.Services
 {
@@ -31,8 +32,16 @@ namespace api_ecommerce_v1.Services
         public List<User> ObtenerTodosLosUser()
         {
             var clients = _context.User.Include(c => c.Login).ToList();
+
             return clients;
         }
+
+     
+
+
+
+
+
 
 
 

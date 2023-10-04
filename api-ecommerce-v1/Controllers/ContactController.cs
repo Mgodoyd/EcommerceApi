@@ -2,6 +2,8 @@
 using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 namespace api_ecommerce_v1.Controllers
 {
@@ -10,37 +12,89 @@ namespace api_ecommerce_v1.Controllers
     public class ContactController : ControllerBase
     {
         private readonly IContact _contactService;
+        private readonly IDistributedCache _distributedCache;
 
-        public ContactController(IContact contactService)
+        public ContactController(IContact contactService, IDistributedCache distributedCache)
         {
             _contactService = contactService;
+            _distributedCache = distributedCache;
         }
 
         [HttpGet]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult GetAllContacts()
         {
-            var contacts = _contactService.GetAllContacts();
-            return Ok(contacts);
+            var cacheKey = "AllContacts";
+            var cachedContacts = _distributedCache.GetString(cacheKey);
+
+            if (cachedContacts != null)
+            {
+                var contacts = JsonConvert.DeserializeObject<List<Contact>>(cachedContacts);
+                return Ok(contacts);
+            }
+            else
+            {
+                var contacts = _contactService.GetAllContacts();
+
+                if (contacts == null || contacts.Count == 0)
+                {
+                    var errorResponse = new
+                    {
+                        mensaje = "No se encontraron contactos."
+                    };
+
+                    return NotFound(errorResponse);
+                }
+
+                var serializedContacts = JsonConvert.SerializeObject(contacts);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                };
+
+                _distributedCache.SetString(cacheKey, serializedContacts, cacheEntryOptions);
+
+                return Ok(contacts);
+            }
         }
 
         [HttpGet("{id}")]
         public IActionResult GetByIdContacts(int id)
         {
-            var contact = _contactService.GetByIdContacts(id);
+            var cacheKey = $"Contact_{id}";
+            var cachedContact = _distributedCache.GetString(cacheKey);
 
-            if (contact == null)
+            if (cachedContact != null)
             {
-                var errorResponse = new
+                var contact = JsonConvert.DeserializeObject<Contact>(cachedContact);
+                return Ok(contact);
+            }
+            else
+            {
+                var contact = _contactService.GetByIdContacts(id);
+
+                if (contact == null)
                 {
-                    mensaje = "Contact no encontrado."
+                    var errorResponse = new
+                    {
+                        mensaje = "Contact no encontrado."
+                    };
+
+                    return NotFound(errorResponse);
+                }
+
+                var serializedContact = JsonConvert.SerializeObject(contact);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
 
-                return NotFound(errorResponse);
-            }
+                _distributedCache.SetString(cacheKey, serializedContact, cacheEntryOptions);
 
-            return Ok(contact);
+                return Ok(contact);
+            }
         }
+
 
         [HttpPost]
         public IActionResult CreateContacts(Contact contact)

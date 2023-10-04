@@ -334,6 +334,8 @@ namespace api_ecommerce_v1.Migrations
 
                     b.HasIndex("SalesId");
 
+                    b.HasIndex("productId");
+
                     b.ToTable("NSales");
                 });
 
@@ -346,9 +348,6 @@ namespace api_ecommerce_v1.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("CartId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NSaleId")
                         .HasColumnType("int");
 
                     b.Property<int>("categoryId")
@@ -391,8 +390,6 @@ namespace api_ecommerce_v1.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
-
-                    b.HasIndex("NSaleId");
 
                     b.HasIndex("categoryId");
 
@@ -566,6 +563,14 @@ namespace api_ecommerce_v1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("api_ecommerce_v1.Models.Product", "products")
+                        .WithMany()
+                        .HasForeignKey("productId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("products");
+
                     b.Navigation("sales");
                 });
 
@@ -574,10 +579,6 @@ namespace api_ecommerce_v1.Migrations
                     b.HasOne("api_ecommerce_v1.Models.Cart", null)
                         .WithMany("product")
                         .HasForeignKey("CartId");
-
-                    b.HasOne("api_ecommerce_v1.Models.NSale", null)
-                        .WithMany("products")
-                        .HasForeignKey("NSaleId");
 
                     b.HasOne("api_ecommerce_v1.Models.Category", "category")
                         .WithMany()
@@ -648,8 +649,6 @@ namespace api_ecommerce_v1.Migrations
 
             modelBuilder.Entity("api_ecommerce_v1.Models.NSale", b =>
                 {
-                    b.Navigation("products");
-
                     b.Navigation("users");
                 });
 

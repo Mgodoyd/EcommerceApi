@@ -17,7 +17,7 @@ namespace api_ecommerce_v1.Models
 
         [Required(ErrorMessage = "El campo 'password' es requerido.")]
         [StringLength(200)]
-        public string password { get; set; }
+        public string? password { get; set; }
 
 
         [StringLength(50)]

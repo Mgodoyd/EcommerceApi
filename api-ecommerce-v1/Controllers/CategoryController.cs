@@ -3,7 +3,9 @@ using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace api_ecommerce_v1.Controllers
 {
@@ -13,9 +15,11 @@ namespace api_ecommerce_v1.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategory _categoryService;
-        public CategoryController(ICategory categoryService)
+        private readonly IDistributedCache _distributedCache;
+        public CategoryController(ICategory categoryService, IDistributedCache distributedCache)
         {
             _categoryService = categoryService;
+            _distributedCache = distributedCache;
         }
 
         [HttpPost]
@@ -30,17 +34,81 @@ namespace api_ecommerce_v1.Controllers
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public IActionResult GetAllCategory()
         {
-            var category = _categoryService.ObtenerTodosCategory();
-            return Ok(category);
+            var cacheKey = "AllCategories";
+            var cachedCategories = _distributedCache.GetString(cacheKey);
+
+            if (cachedCategories != null)
+            {
+                var categories = JsonConvert.DeserializeObject<List<Category>>(cachedCategories);
+                return Ok(categories);
+            }
+            else
+            {
+                var categories = _categoryService.ObtenerTodosCategory();
+
+                if (categories == null)
+                {
+                    var errorResponse = new
+                    {
+                        mensaje = "Categorías no encontradas."
+                    };
+
+                    var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                    return NotFound(jsonResponse);
+                }
+
+                var serializedCategories = JsonConvert.SerializeObject(categories);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+
+                _distributedCache.SetString(cacheKey, serializedCategories, cacheEntryOptions);
+
+                return Ok(categories);
+            }
         }
 
         [HttpGet("public")]
         [AllowAnonymous]
         public IActionResult GetAllCategoryPublic()
         {
-            var category = _categoryService.ObtenerTodosCategoryPublic();
-            return Ok(category);
+            var cacheKey = "AllCategoriesPublic";
+            var cachedCategories = _distributedCache.GetString(cacheKey);
+
+            if (cachedCategories != null)
+            {
+                var categories = JsonConvert.DeserializeObject<List<Category>>(cachedCategories);
+                return Ok(categories);
+            }
+            else
+            {
+                var categories = _categoryService.ObtenerTodosCategoryPublic();
+
+                if (categories == null)
+                {
+                    var errorResponse = new
+                    {
+                        mensaje = "Categorías públicas no encontradas."
+                    };
+
+                    var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                    return NotFound(jsonResponse);
+                }
+
+                var serializedCategories = JsonConvert.SerializeObject(categories);
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+
+                _distributedCache.SetString(cacheKey, serializedCategories, cacheEntryOptions);
+
+                return Ok(categories);
+            }
         }
+
+
 
         [HttpDelete("{categoryId}")]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]

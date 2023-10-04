@@ -13,7 +13,6 @@ namespace api_ecommerce_v1.Controllers
 {
     [Route("api/products")]
     [ApiController]
-    // [Produces("application/json")]
   // [ServiceFilter(typeof(JwtAuthorizationFilter))]
     public class ProductController : ControllerBase
     {
@@ -55,7 +54,7 @@ namespace api_ecommerce_v1.Controllers
 
                 _distributedCache.Set(cacheKey, encodedProducts, new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 });
 
                 return Ok(products);
@@ -88,7 +87,7 @@ namespace api_ecommerce_v1.Controllers
                     var serializedProducts = JsonConvert.SerializeObject(products, settings);
                     var cacheEntryOptions = new DistributedCacheEntryOptions
                     {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                     };
                     _distributedCache.Set(cacheKey, Encoding.UTF8.GetBytes(serializedProducts), cacheEntryOptions);
                     return Ok(products);
@@ -135,7 +134,7 @@ namespace api_ecommerce_v1.Controllers
                 var serializedProducts = JsonConvert.SerializeObject(product, settings);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
                 _distributedCache.Set(cacheKey, Encoding.UTF8.GetBytes(serializedProducts), cacheEntryOptions);
                 return Ok(product);
@@ -177,7 +176,7 @@ namespace api_ecommerce_v1.Controllers
                 var serializedProducts = JsonConvert.SerializeObject(product, settings);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
                 _distributedCache.Set(cacheKey, Encoding.UTF8.GetBytes(serializedProducts), cacheEntryOptions);
                 return Ok(product);
