@@ -100,6 +100,13 @@ namespace api_ecommerce_v1.Controllers
         public IActionResult CreateContacts(Contact contact)
         {
             var contactCreado = _contactService.CreateContacts(contact);
+
+
+            var cacheKey = $"AllContacts";
+
+            // Elimina la entrada de caché existente
+            _distributedCache.Remove(cacheKey);
+
             return CreatedAtAction(nameof(GetByIdContacts), new { id = contactCreado.Id }, contactCreado);
         }
 
@@ -117,6 +124,11 @@ namespace api_ecommerce_v1.Controllers
 
                 return NotFound(errorResponse);
             }
+
+            var cacheKey = $"AllContacts";
+
+            // Elimina la entrada de caché existente
+            _distributedCache.Remove(cacheKey);
 
             return Ok(contactActualizado);
         }

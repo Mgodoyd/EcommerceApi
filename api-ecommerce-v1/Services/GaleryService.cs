@@ -1,14 +1,17 @@
 ﻿using api_ecommerce_v1.Models;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace api_ecommerce_v1.Services
 {
     public class GaleryService : IGalery
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDistributedCache _distributedCache;
 
-        public GaleryService(ApplicationDbContext context)
+        public GaleryService(ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _context = context;
+            _distributedCache = distributedCache;
         }
 
         public Galery CrearGalery(Galery galery)
@@ -54,6 +57,11 @@ namespace api_ecommerce_v1.Services
             }
 
             _context.Galery.Remove(galeryExistente);
+
+            var cacheKey = $"GaleryAll";
+
+            // Elimina la entrada de caché existente
+            _distributedCache.Remove(cacheKey);
             _context.SaveChanges();
 
             return true;

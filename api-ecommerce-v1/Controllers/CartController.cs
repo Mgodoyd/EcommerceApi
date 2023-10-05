@@ -90,7 +90,7 @@ namespace api_ecommerce_v1.Controllers
                 var serializedCart = JsonConvert.SerializeObject(cart);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
 
                 _distributedCache.SetString(cacheKey, serializedCart, cacheEntryOptions);
@@ -116,9 +116,12 @@ namespace api_ecommerce_v1.Controllers
                     return Ok(cart);
                 }
 
-                // Si no se encuentra en caché o hubo un problema de deserialización,
-                // obtén los datos del servicio y almacénalos en caché
+                // Verifica si el carrito está vacío antes de consultar el servicio
                 var cartFromService = _cartService.ObtenerCarritoPorUsuario(userId);
+                // Verifica si el carrito está vacío
+                if (cartFromService.Count == 0)
+                {
+                    // No consultes la base de datos si el carrito está vacío
 
                 if (cartFromService == null)
                 {
@@ -131,11 +134,14 @@ namespace api_ecommerce_v1.Controllers
                     return NotFound(jsonResponse);
                 }
 
+                    return Ok(cartFromService);
+                }
+
                 // Serializa y almacena el carrito en caché (sobrescribiendo si ya existe)
                 var serializedCart = JsonConvert.SerializeObject(cartFromService);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1)
                 };
 
                 _distributedCache.SetString(cacheKey, serializedCart, cacheEntryOptions);
@@ -152,21 +158,40 @@ namespace api_ecommerce_v1.Controllers
             {
                 // Maneja cualquier otra excepción y registra para diagnóstico
                 Console.WriteLine($"Error en GetCartByUserId: {ex}");
-                return StatusCode(500, "Error interno del servidor" +ex);
+                return StatusCode(500, "Error interno del servidor" + ex);
             }
         }
 
 
-
-
-
-
-
-
         [HttpPost]
-        public IActionResult CreateCart([FromBody] Models.Cart cart)
+        public IActionResult CreateCart([FromBody] Cart cart)
         {
             var newCart = _cartService.CrearCart(cart);
+
+            // Aquí se crea el carrito en la base de datos
+
+            if (newCart == null)
+            {
+                var errorResponse = new
+                {
+                    mensaje = "No se pudo crear el carrito."
+                };
+
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return BadRequest(jsonResponse);
+            }
+
+           /* var cacheKey = $"CartByUserId_{newCart.userId}";
+
+            // Elimina la entrada de caché existente
+            _distributedCache.Remove(cacheKey);
+
+            var cacheKey2 = "AllCarts";
+            _distributedCache.Remove(cacheKey2);
+
+            var cacheKey3 = $"CartById_{newCart.Id}";
+            _distributedCache.Remove(cacheKey3);*/
+
             return CreatedAtAction(nameof(GetCartById), new { id = newCart.Id }, newCart);
         }
 
@@ -186,8 +211,14 @@ namespace api_ecommerce_v1.Controllers
                 return NotFound(jsonResponse);
             }
 
+            var cacheKey = $"CartByUserId_{cartUpdated.userId}";
+
+            // Elimina la entrada de caché existente
+            _distributedCache.Remove(cacheKey);
+
             return Ok(cartUpdated);
         }
+
 
         [HttpDelete("{id}")]
         public IActionResult DeleteCart(int id)
@@ -207,7 +238,5 @@ namespace api_ecommerce_v1.Controllers
 
             return Ok();
         }
-       
-
     }
-}
+    }

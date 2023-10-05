@@ -174,9 +174,28 @@ namespace api_ecommerce_v1.Controllers
 
 
         [HttpPost]
-        public IActionResult CreateAddress( Address address)
+        public IActionResult CreateAddress(Address address)
         {
             var newAddress = _addressService.CrearAddress(address);
+
+            // Aquí se crea la dirección en la base de datos
+
+            if (newAddress == null)
+            {
+                var errorResponse = new
+                {
+                    mensaje = "No se pudo crear la dirección."
+                };
+
+                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
+                return BadRequest(jsonResponse);
+            }
+
+            var cacheKey = $"AddressByUserId_{newAddress.userId}";
+
+            // Elimina la entrada de caché existente o actualiza la caché aquí
+            _distributedCache.Remove(cacheKey);
+
             return Ok(newAddress);
         }
 
@@ -196,8 +215,14 @@ namespace api_ecommerce_v1.Controllers
                 return NotFound(jsonResponse);
             }
 
+            var cacheKey = $"AddressByUserId_{addressActualizado.userId}";
+
+            // Elimina la entrada de caché existente o actualiza la caché aquí
+            _distributedCache.Remove(cacheKey);
+
             return Ok(addressActualizado);
         }
+
 
         [HttpDelete("{id}")]
         public IActionResult DeleteAddress(int id)

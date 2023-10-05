@@ -1,15 +1,18 @@
 ﻿using api_ecommerce_v1.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace api_ecommerce_v1.Services
 {
     public class ProductService : IProductService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDistributedCache _distributedCache;
 
-        public ProductService(ApplicationDbContext context)
+        public ProductService(ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _context = context;
+            _distributedCache = distributedCache;
         }
 
         public Product CrearProduct(Product product)
@@ -132,6 +135,8 @@ namespace api_ecommerce_v1.Services
             }
 
             _context.Product.Remove(productExistente);
+
+
             _context.SaveChanges();
             return true;
         }

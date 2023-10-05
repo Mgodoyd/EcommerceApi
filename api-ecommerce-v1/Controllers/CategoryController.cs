@@ -27,6 +27,13 @@ namespace api_ecommerce_v1.Controllers
         public IActionResult CreateCategory(Category category)
         {
             _categoryService.CrearCategory(category);
+
+            var cacheKey = "AllCategories";
+            _distributedCache.Remove(cacheKey);
+
+            var cacheKey2 = "AllCategoriesPublic";
+            _distributedCache.Remove(cacheKey2);
+
             return Ok(category);
         }
 

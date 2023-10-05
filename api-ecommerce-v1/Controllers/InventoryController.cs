@@ -136,6 +136,16 @@ namespace api_ecommerce_v1.Controllers
         public IActionResult CreateInventory([FromForm] Inventory inventory)
         {
             var _inventory = _inventoryService.CrearInventory(inventory);
+
+            var cacheKey = $"InventariosByProductId_{inventory.productId}";
+            _distributedCache.Remove(cacheKey);
+
+            var cacheKey2 = "AllProducts";
+            _distributedCache.Remove(cacheKey2);
+
+            var cacheKey3 = "AllProductsPublic";
+            _distributedCache.Remove(cacheKey3);
+
             return Ok(_inventory);
         }
 

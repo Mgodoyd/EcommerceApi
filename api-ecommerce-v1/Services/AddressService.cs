@@ -1,15 +1,18 @@
 ﻿using api_ecommerce_v1.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace api_ecommerce_v1.Services
 {
     public class AddressService : IAddress
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDistributedCache _distributedCache;
 
-        public AddressService(ApplicationDbContext context)
+        public AddressService(ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _context = context;
+            _distributedCache = distributedCache;
         }
 
         public Address CrearAddress(Address address)
@@ -29,6 +32,10 @@ namespace api_ecommerce_v1.Services
             }
 
             _context.Address.Remove(address);
+
+            var cacheKey = $"AddressByUserId_{address.userId}";
+            _distributedCache.Remove(cacheKey);
+
             _context.SaveChanges();
             return true;
         }

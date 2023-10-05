@@ -50,6 +50,9 @@ namespace api_ecommerce_v1.Controllers
                 return NotFound(jsonResponse);
             }
 
+            var cacheKey = $"Config_{id}";
+            _distributedCache.Remove(cacheKey);
+
             return Ok(configActualizado);
         }
 

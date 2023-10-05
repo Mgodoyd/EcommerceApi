@@ -94,7 +94,7 @@ namespace api_ecommerce_v1.Controllers
                 // Almacena la venta en la caché de Redis con una expiración (por ejemplo, 30 minutos)
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(3)
                 };
 
                 _distributedCache.SetString($"Sale_{id}", serializedSale, cacheOptions);
@@ -273,8 +273,19 @@ namespace api_ecommerce_v1.Controllers
         public IActionResult CreateSale(Sales sale)
         {
             var saleCreado = _saleService.CrearSale(sale);
+
+            var cacheKey = "SalesData";
+            _distributedCache.Remove(cacheKey);
+
+            if (sale.userId != null)
+            {
+                var cacheKey2 = $"SalesByUserId_{sale.userId}";
+                _distributedCache.Remove(cacheKey2);
+            }
+
             return CreatedAtAction(nameof(GetSalesById), new { id = saleCreado.Id }, saleCreado);
         }
+
 
         [HttpPut("{id}")]
         public IActionResult UpdateSale(int id,  Sales sale)
@@ -290,6 +301,16 @@ namespace api_ecommerce_v1.Controllers
 
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return NotFound(jsonResponse);
+            }
+
+            var cacheKey = "SalesData";
+            _distributedCache.Remove(cacheKey);
+
+            if (sale.userId != null)
+            {
+                var cacheKey2 = $"SalesByUserId_{sale.userId}";
+                _distributedCache.Remove(cacheKey2);
+
             }
 
             return Ok(saleActualizado);

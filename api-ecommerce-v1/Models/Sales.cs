@@ -36,7 +36,6 @@ namespace api_ecommerce_v1.Models
         [StringLength(50)]
         public string? state { get; set; }
 
-        [Required(ErrorMessage = "El campo 'note' es requerido.")]
         [StringLength(50)]
         public string? note { get; set; }
 

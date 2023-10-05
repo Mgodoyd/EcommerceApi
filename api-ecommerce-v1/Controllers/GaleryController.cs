@@ -28,7 +28,7 @@ namespace api_ecommerce_v1.Controllers
         [HttpGet("{galeryId}")]
         public IActionResult GetGaleryById(int galeryId)
         {
-            var cacheKey = $"GaleryById_{galeryId}";
+            var cacheKey = $"GaleryAll";
             var cachedGalery = _distributedCache.GetString(cacheKey);
 
             if (cachedGalery != null)
@@ -82,6 +82,11 @@ namespace api_ecommerce_v1.Controllers
 
             var galeryCreada = _galeryService.CrearGalery(galery);
 
+            var cacheKey = $"GaleryAll";
+
+            // Elimina la entrada de caché existente
+            _distributedCache.Remove(cacheKey);
+
             return Ok(galeryCreada);
         }
 
@@ -109,6 +114,11 @@ namespace api_ecommerce_v1.Controllers
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return NotFound(jsonResponse);
             }
+
+            var cacheKey = $"GaleryAll";
+
+            // Elimina la entrada de caché existente
+            _distributedCache.Remove(cacheKey);
 
             return Ok(galeryActualizada);
         }

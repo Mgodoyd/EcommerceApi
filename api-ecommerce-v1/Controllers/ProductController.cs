@@ -211,6 +211,13 @@ namespace api_ecommerce_v1.Controllers
             }
 
             var newProduct = _productService.CrearProduct(product);
+
+            var cacheKey = "AllProductsPublic";
+            _distributedCache.Remove(cacheKey);
+
+            var cacheKey2 = "AllProducts";
+            _distributedCache.Remove(cacheKey2);
+
             return CreatedAtAction(nameof(GetProductById), new { id = newProduct.Id }, newProduct);
         }
 
@@ -218,7 +225,7 @@ namespace api_ecommerce_v1.Controllers
 
         [HttpPut("{id}")]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
-        public async Task<IActionResult> UpdateProduct([FromForm] Product product, int id, IFormFile imageFile)
+        public async Task<IActionResult> UpdateProduct([FromForm] Product product, int id, IFormFile? imageFile)
         {
             if (imageFile != null)
             {
@@ -253,6 +260,15 @@ namespace api_ecommerce_v1.Controllers
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return NotFound(jsonResponse);
             }
+
+            var cacheKey = "AllProductsPublic";
+            _distributedCache.Remove(cacheKey);
+
+            var cacheKey2 = "AllProducts";
+            _distributedCache.Remove(cacheKey2);
+
+            var cacheKey3 = $"ProductById_{id}";
+            _distributedCache.Remove(cacheKey3);
 
             return Ok(updatedProduct);
         }
@@ -319,6 +335,13 @@ namespace api_ecommerce_v1.Controllers
 
             // Serializar el objeto JSON y devolverlo con una respuesta HTTP 200 (OK)
             var successJsonResponse = JsonConvert.SerializeObject(successResponse);
+
+
+            var cacheKey = "AllProducts";
+            _distributedCache.Remove(cacheKey);
+
+            var cacheKey2 = "AllProductsPublic";
+            _distributedCache.Remove(cacheKey2);
             return Ok(successJsonResponse);
         }
     }

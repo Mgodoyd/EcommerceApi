@@ -1,15 +1,18 @@
 ﻿using api_ecommerce_v1.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace api_ecommerce_v1.Services
 {
     public class ContactService : IContact
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDistributedCache _distributedCache;
 
-        public ContactService(ApplicationDbContext context)
+        public ContactService(ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _context = context;
+            _distributedCache = distributedCache;
         }
 
         public List<Contact> GetAllContacts()
@@ -58,6 +61,12 @@ namespace api_ecommerce_v1.Services
         {
             var contact = _context.Contact.FirstOrDefault(x => x.Id == id);
             _context.Contact.Remove(contact);
+
+            var cacheKey = $"Contact_{id}";
+
+            // Elimina la entrada de caché existente
+            _distributedCache.Remove(cacheKey);
+
             _context.SaveChanges();
         }
     }

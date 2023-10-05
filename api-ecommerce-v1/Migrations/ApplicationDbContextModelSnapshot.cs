@@ -427,7 +427,6 @@ namespace api_ecommerce_v1.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("note")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 

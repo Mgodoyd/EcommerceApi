@@ -18,7 +18,7 @@ namespace api_ecommerce_v1.Models
 
         [NotMapped]
         [Display(Name = "Image")]
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
         [Required(ErrorMessage = "El campo 'price' es requerido.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'price' debe ser un número.")]

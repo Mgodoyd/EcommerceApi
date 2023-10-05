@@ -1,14 +1,17 @@
 ﻿using api_ecommerce_v1.Models;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace api_ecommerce_v1.Services
 {
     public class CouponService : ICoupon
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDistributedCache _distributedCache;
 
-        public CouponService(ApplicationDbContext context)
+        public CouponService(ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _context = context;
+            _distributedCache = distributedCache;
         }
         public Coupon CrearCoupon(Coupon coupon)
         {
@@ -68,6 +71,10 @@ namespace api_ecommerce_v1.Services
 
             // Elimina el producto del contexto y guarda los cambios en la base de datos
             _context.Cupon.Remove(couponExistente);
+
+            var cacheKey = $"AllCoupons";
+            _distributedCache.Remove(cacheKey);
+
             _context.SaveChanges();
 
             return true;

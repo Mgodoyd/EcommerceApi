@@ -100,6 +100,12 @@ namespace api_ecommerce_v1.Controllers
         public IActionResult CreateCoupon(Coupon coupon)
         {
             _couponService.CrearCoupon(coupon);
+
+            var cacheKey = $"AllCoupons";
+
+            // Elimina la entrada de caché existente
+            _distributedCache.Remove(cacheKey);
+
             return Ok(coupon);
         }
 
@@ -155,6 +161,9 @@ namespace api_ecommerce_v1.Controllers
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return NotFound(jsonResponse);
             }
+
+            var cacheKey = $"AllCoupons";
+            _distributedCache.Remove(cacheKey);
 
             return Ok(couponActualizado);
         }

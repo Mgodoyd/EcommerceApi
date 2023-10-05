@@ -62,7 +62,7 @@ namespace api_ecommerce_v1.Controllers
                 var serializedUsers = JsonConvert.SerializeObject(users);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
                 _distributedCache.SetString(cacheKey, serializedUsers, cacheEntryOptions);
 
@@ -100,7 +100,7 @@ namespace api_ecommerce_v1.Controllers
                 var serializedUser = JsonConvert.SerializeObject(user);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
                 _distributedCache.SetString(cacheKey, serializedUser, cacheEntryOptions);
 
@@ -138,7 +138,7 @@ namespace api_ecommerce_v1.Controllers
                 var serializedUser = JsonConvert.SerializeObject(user);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(3)
                 };
                 _distributedCache.SetString(cacheKey, serializedUser, cacheEntryOptions);
 
@@ -167,6 +167,11 @@ namespace api_ecommerce_v1.Controllers
             }
 
             var createdClient = _userService.CrearUser(user);
+
+            var cacheKey = "AllUsers";
+            _distributedCache.Remove(cacheKey);
+
+
             return CreatedAtAction(nameof(GetUserById), new { id = createdClient.Id }, createdClient);
         }
 
@@ -208,6 +213,12 @@ namespace api_ecommerce_v1.Controllers
                 return NotFound(jsonResponse);
             }
 
+
+            var caheKey2= "AllUsers";
+            _distributedCache.Remove(caheKey2);
+
+            var cacheKey3 = $"UserAdminById_{id}";
+            _distributedCache.Remove(cacheKey3);
             return Ok(updatedClient);
         }
 
@@ -236,6 +247,15 @@ namespace api_ecommerce_v1.Controllers
             {
                 mensaje = "Usuario eliminado exitosamente."
             };
+
+            var cacheKey = $"UserById_{id}";
+            _distributedCache.Remove(cacheKey);
+
+            var cacheKey2 = "AllUsers";
+            _distributedCache.Remove(cacheKey2);
+
+            var cacheKey3 = $"UserAdminById_{id}";
+            _distributedCache.Remove(cacheKey3);
 
             // Serializar el objeto JSON y devolverlo con una respuesta HTTP 200 (OK)
             var successJsonResponse = JsonConvert.SerializeObject(successResponse);

@@ -1,5 +1,6 @@
 ﻿using api_ecommerce_v1.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -9,10 +10,12 @@ namespace api_ecommerce_v1.Services
     public class UserService : IUserService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDistributedCache _distributedCache;
 
-        public UserService(ApplicationDbContext context)
+        public UserService(ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _context = context;
+            _distributedCache = distributedCache;
         }
 
         // Método para crear un nuevo cliente
@@ -104,6 +107,9 @@ namespace api_ecommerce_v1.Services
 
             // Marca la entidad User como modificada
             _context.Entry(clienteExistente).State = EntityState.Modified;
+
+            var cacheKey = $"UserById_{clienteActualizado.Id}";
+            _distributedCache.Remove(cacheKey);
 
             // Guarda los cambios en la base de datos
             _context.SaveChanges();
