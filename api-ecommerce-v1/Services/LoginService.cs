@@ -112,6 +112,24 @@ namespace api_ecommerce_v1.Services
                 return false;
             }
         }
+
+        public Login UpdatePassword(string email, Login login)
+        {
+            var existingUser = _dbContext.Login.FirstOrDefault(u => u.email == email);
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(login.password);
+
+
+            login.password = hashedPassword;
+
+            if (existingUser != null)
+            {
+                existingUser.password = login.password;
+                _dbContext.SaveChanges();
+            }
+
+            return existingUser;
+        }
+
     }
 
 

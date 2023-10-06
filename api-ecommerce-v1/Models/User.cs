@@ -26,8 +26,8 @@ namespace api_ecommerce_v1.Models
         public string address { get; set; }
 
 
-        [StringLength(50)]
-        public string? profile { get; set;}
+       /* [StringLength(50)]
+        public string? profile { get; set;}*/
 
         [Required(ErrorMessage = "El campo 'phone' es requerido.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'phone' debe ser un número.")]

@@ -19,15 +19,27 @@ namespace api_ecommerce_v1.Services
         }
 
         // Método para crear un nuevo cliente
-        public User CrearUser(User cliente)
+        public User CrearUser(User user)
         {
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(cliente.Login.password);
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Login.password);
 
             // Asignar el hash a la contraseña en lugar del valor en texto plano
-            cliente.Login.password = hashedPassword;
-            _context.User.Add(cliente);
+            user.Login.password = hashedPassword;
+            _context.User.Add(user);
             _context.SaveChanges();
-            return cliente;
+            return user;
+        }
+
+        public User CrearUserPublic(User user)
+        {
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Login.password);
+
+           
+            user.Login.password = hashedPassword;
+            user.Login.rol = "cliente";
+            _context.User.Add(user);
+            _context.SaveChanges();
+            return user;
         }
 
 
@@ -38,13 +50,6 @@ namespace api_ecommerce_v1.Services
 
             return clients;
         }
-
-     
-
-
-
-
-
 
 
 
@@ -93,7 +98,7 @@ namespace api_ecommerce_v1.Services
             clienteExistente.Name = clienteActualizado.Name;
             clienteExistente.lastname = clienteActualizado.lastname;
             clienteExistente.address = clienteActualizado.address;
-            clienteExistente.profile = clienteActualizado.profile;
+           // clienteExistente.profile = clienteActualizado.profile;
             clienteExistente.phone = clienteActualizado.phone;
             clienteExistente.nit = clienteActualizado.nit;
 

@@ -53,7 +53,7 @@ namespace api_ecommerce_v1.Controllers
                 var serializedCarts = JsonConvert.SerializeObject(carts);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
 
                 _distributedCache.SetString(cacheKey, serializedCarts, cacheEntryOptions);
@@ -141,7 +141,7 @@ namespace api_ecommerce_v1.Controllers
                 var serializedCart = JsonConvert.SerializeObject(cartFromService);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1)
+                   // AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
 
                 _distributedCache.SetString(cacheKey, serializedCart, cacheEntryOptions);
@@ -223,9 +223,9 @@ namespace api_ecommerce_v1.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteCart(int id)
         {
-            var cartDeleted = _cartService.EliminarCart(id);
+            var deletedCart = _cartService.EliminarCart(id);
 
-            if (!cartDeleted)
+            if (deletedCart == null)
             {
                 var errorResponse = new
                 {
@@ -235,8 +235,19 @@ namespace api_ecommerce_v1.Controllers
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return NotFound(jsonResponse);
             }
+            var successResponse = new
+            {
+                mensaje = "Carrito eliminado exitosamente."
+            };
 
-            return Ok();
+           
+
+            var cacheKey = "AllCarts";
+            _distributedCache.Remove(cacheKey);
+
+            var successJsonResponse = JsonConvert.SerializeObject(successResponse);
+            return Ok(successJsonResponse);
         }
+
     }
-    }
+}

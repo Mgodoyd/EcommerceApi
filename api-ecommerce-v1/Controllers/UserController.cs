@@ -138,7 +138,7 @@ namespace api_ecommerce_v1.Controllers
                 var serializedUser = JsonConvert.SerializeObject(user);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(3)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
                 _distributedCache.SetString(cacheKey, serializedUser, cacheEntryOptions);
 
@@ -171,6 +171,34 @@ namespace api_ecommerce_v1.Controllers
             var cacheKey = "AllUsers";
             _distributedCache.Remove(cacheKey);
 
+
+            return CreatedAtAction(nameof(GetUserById), new { id = createdClient.Id }, createdClient);
+        }
+
+
+        [HttpPost("public")]
+        [AllowAnonymous]
+        public IActionResult CreateUserPublic([FromBody] User user)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToArray();
+
+                var errorResponse = new ErrorResponse
+                {
+                    Message = "Solicitud no válida",
+                    Errors = errors
+                };
+
+                return BadRequest(errorResponse);
+            }
+
+            var createdClient = _userService.CrearUserPublic(user);
+
+            var cacheKey = "AllUsers";
+            _distributedCache.Remove(cacheKey);
 
             return CreatedAtAction(nameof(GetUserById), new { id = createdClient.Id }, createdClient);
         }
@@ -213,6 +241,10 @@ namespace api_ecommerce_v1.Controllers
                 return NotFound(jsonResponse);
             }
 
+            var idLogin = _context.User.Where(x => x.Id == id).Select(x => x.LoginId).FirstOrDefault();
+
+            var cacheKey = $"UserById_{idLogin}";
+            _distributedCache.Remove(cacheKey);
 
             var caheKey2= "AllUsers";
             _distributedCache.Remove(caheKey2);

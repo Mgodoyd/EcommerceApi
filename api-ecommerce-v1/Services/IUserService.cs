@@ -7,6 +7,8 @@ namespace api_ecommerce_v1.Services
         // Método para crear un nuevo cliente
         User CrearUser(User user);
 
+        User CrearUserPublic(User user);
+
         // Método para obtener todos los clientes
         List<User> ObtenerTodosLosUser();
 

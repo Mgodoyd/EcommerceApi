@@ -498,10 +498,6 @@ namespace api_ecommerce_v1.Migrations
                     b.Property<int>("phone")
                         .HasColumnType("int");
 
-                    b.Property<string>("profile")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
