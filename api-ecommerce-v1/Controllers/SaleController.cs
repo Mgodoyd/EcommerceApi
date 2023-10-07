@@ -334,7 +334,12 @@ namespace api_ecommerce_v1.Controllers
                 return NotFound(jsonResponse);
             }
 
-            return Ok();
+            var mensaje = new
+            {
+                mensaje = "Venta eliminada correctamente."
+            };
+
+            return Ok(mensaje);
         }
 
 

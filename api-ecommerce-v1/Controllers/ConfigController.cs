@@ -2,7 +2,6 @@
 using api_ecommerce_v1.helpers;
 using api_ecommerce_v1.Models;
 using api_ecommerce_v1.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;

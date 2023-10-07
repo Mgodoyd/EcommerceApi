@@ -36,7 +36,7 @@ namespace api_ecommerce_v1.Services
         */
         public List<Sales> ObtenerVentasPorUserId(int userId)
         {
-            return _context.Sales.Where(s => s.userId == userId).ToList();
+            return _context.Sales.Where(s => s.userId == userId).Include(s => s.user).Include(s => s.address).Include(s => s.nsale).ToList();
         }
 
         /*
@@ -44,7 +44,7 @@ namespace api_ecommerce_v1.Services
         */
         public List<Sales> ObtenerTodoslasSale()
         {
-            return _context.Sales.Include(s => s.user).ToList();
+            return _context.Sales.Include(s => s.user).Include(s => s.address).Include(s => s.nsale).ToList();
         }
 
         /*

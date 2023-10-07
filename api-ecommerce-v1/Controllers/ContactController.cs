@@ -154,7 +154,13 @@ namespace api_ecommerce_v1.Controllers
         public IActionResult DeleteContacts(int id)
         {
             _contactService.DeleteContacts(id);
-            return NoContent();
+
+            var messageResponse = new
+            {
+                mensaje = "Contact eliminado exitosamente."
+            };
+
+            return Ok(messageResponse);
         }
     }
 }

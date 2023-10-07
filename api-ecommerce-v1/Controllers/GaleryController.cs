@@ -97,7 +97,7 @@ namespace api_ecommerce_v1.Controllers
         /*
          *  Método para actualizar una galería
          */
-        [HttpPut]
+       /* [HttpPut]
         public async Task<IActionResult> UpdateGalery([FromForm] Galery galery, IFormFile imageFile)
         {
             if (imageFile != null)
@@ -126,7 +126,7 @@ namespace api_ecommerce_v1.Controllers
             _distributedCache.Remove(cacheKey);
 
             return Ok(galeryActualizada);
-        }
+        }*/
 
         /*
          *  Método para eliminar una galería
@@ -148,7 +148,12 @@ namespace api_ecommerce_v1.Controllers
                 return NotFound(jsonResponse);
             }
 
-            return Ok();
+            var messageResponse = new
+            {
+                mensaje = "Galeria eliminada correctamente."
+            };
+
+            return Ok(messageResponse);
         }
     }
 }
