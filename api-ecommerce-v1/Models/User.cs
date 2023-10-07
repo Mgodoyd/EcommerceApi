@@ -14,25 +14,18 @@ namespace api_ecommerce_v1.Models
         [NotNumeric(ErrorMessage = "El campo 'name' no debe contener números.")]
         public string Name { get; set; }
 
-
         [Required(ErrorMessage = "El campo 'last name' es requerido.")]
         [StringLength(50)]
         [NotNumeric(ErrorMessage = "El campo 'last name' no debe contener números.")]
         public string lastname { get; set; }
 
-
-        [Required]
+        [Required(ErrorMessage = "El campo 'address' es requerido.")]
         [StringLength(50)]
         public string address { get; set; }
-
-
-       /* [StringLength(50)]
-        public string? profile { get; set;}*/
 
         [Required(ErrorMessage = "El campo 'phone' es requerido.")]
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'phone' debe ser un número.")]
         public int phone { get; set;}
-
 
         [Required(ErrorMessage = "El campo 'nit' es requerido.")]
         [StringLength(50)]
@@ -43,16 +36,22 @@ namespace api_ecommerce_v1.Models
 
         public User()
         {
-            // Inicializa createdDate con la fecha y hora actuales del servidor
-            createdDate = DateTime.Now; // Utiliza DateTime.UtcNow si prefieres la hora UTC
+            createdDate = DateTime.Now;
         }
 
-        // Propiedad de navegación para la relación con Login
+        /*
+         * Relación con la tabla Login 
+        */
         public int LoginId { get; set; }
         public Login? Login { get; set; }
     }
 
 }
+
+/*
+ * Validación personalizada para que el campo no contenga números, solo letras
+ * utilizando expresiones regulares y atributos para la validación
+ */
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
 public class NotNumericAttribute : ValidationAttribute

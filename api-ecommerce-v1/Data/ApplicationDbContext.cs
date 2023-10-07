@@ -5,6 +5,9 @@ namespace api_ecommerce_v1
 {
     public class ApplicationDbContext : DbContext
     {
+        /*
+         * Aquí se tiene una DbSet por cada Entidad esto para poder mapear cada una como tabla a la base de datos.
+         */
         public DbSet<User> User { get; set; }
         public DbSet<Login> Login { get; set; }
         public DbSet<Product> Product { get; set; }
@@ -23,28 +26,20 @@ namespace api_ecommerce_v1
         {
         }
 
+        /*
+         *    Aquí se tiene el mapeo de las relaciones entre las entidades.
+        */
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Inventory>()
-                .HasOne(i => i.product)  // Aquí deberías usar la propiedad de navegación "Product"
+                .HasOne(i => i.product)  
                 .WithOne(p => p.inventory)
                 .HasForeignKey<Product>(p => p.inventoryId);
 
-            /* modelBuilder.Entity<Product>()
-             .HasOne(p => p.galerys)  // Producto tiene una relación uno a uno con Galery
-             .WithOne(g => g.product)  // Galery tiene una relación uno a uno con Product
-             .HasForeignKey<Galery>(g => g.productId);  // Indica que Galery es el lado dependiente*/
-
-            /*modelBuilder.Entity<Product>()
-                .HasOne(p => p.category)
-                .WithMany()*
-                .HasForeignKey(p => p.categoryId);*/
             modelBuilder.Entity<Sales>()
                .HasMany(s => s.nsale)
                .WithOne(ns => ns.sales)
                .HasForeignKey(ns => ns.SalesId);
-
-
         }
     }
 }

@@ -15,7 +15,7 @@ namespace api_ecommerce_v1.Models
         [EmailAddress(ErrorMessage = "El campo 'email' debe ser una dirección de correo electrónico válida.")]
         public string email { get; set; }
 
-        [Required(ErrorMessage = "El campo 'password' es requerido.")]
+        //[Required(ErrorMessage = "El campo 'password' es requerido.")]
         [StringLength(200)]
         public string? password { get; set; }
 

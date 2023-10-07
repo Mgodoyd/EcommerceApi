@@ -6,10 +6,17 @@ namespace api_ecommerce_v1.Services
     {
         private readonly ApplicationDbContext _context;
 
+        /*
+         *  Inyectamos el Servicio
+         */
         public InventoryService(ApplicationDbContext context)
         {
             _context = context;
         }
+
+        /*
+         *  Método para crear un nuevo inventario
+         */
         public Inventory CrearInventory(Inventory inventory)
         {
             // Busca el último inventario relacionado con el mismo productId
@@ -41,7 +48,6 @@ namespace api_ecommerce_v1.Services
                 return newInventory;
             }
 
-            // Si no existe un inventario anterior para el mismo producto, crea uno nuevo
             _context.Inventory.Add(inventory);
             _context.SaveChanges();
 
@@ -56,15 +62,18 @@ namespace api_ecommerce_v1.Services
             return inventory;
         }
 
-
-
-
+        /*
+         *  Método para obtener un inventario por su id
+         */
         public Inventory ObtenerInventoryPorId(int inventoryId)
         {
             var inventory = _context.Inventory.Find(inventoryId);
             return inventory;
         }
 
+        /*
+         * Método para obtener un inventario por el id de su producto
+         */
         public List<Inventory> ObtenerInventariosPorProductId(int productId)
         {
             var inventarios = _context.Inventory
@@ -72,6 +81,10 @@ namespace api_ecommerce_v1.Services
                 .ToList();
             return inventarios;
         }
+
+        /*
+         *  Método para eliminar un inventario por su id
+         */
 
         public bool EliminarInventory(int inventoryId)
         {
@@ -85,6 +98,9 @@ namespace api_ecommerce_v1.Services
             return true;
         }
 
+        /*
+         *  Método para actualizar un inventario por su id
+         */
         public Inventory ActualizarInventory(int inventoryId, Inventory inventoryActualizado)
         {
             var inventory = _context.Inventory.Find(inventoryId);
@@ -98,6 +114,9 @@ namespace api_ecommerce_v1.Services
             return inventory;
         }
 
+        /*
+         *  Método para obtener todos los inventarios
+         */
         public List<Inventory> ObtenerTodoInventory()
         {
             var inventory = _context.Inventory.ToList();

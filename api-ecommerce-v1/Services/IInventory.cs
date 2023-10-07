@@ -4,20 +4,29 @@ namespace api_ecommerce_v1.Services
 {
     public interface IInventory
     {
-        // Método para crear un nuevo producto
+        /*
+         *     Métodos que debe tener la clase que implemente esta interfaz.
+         *     
+         *     Nota: Todos los métodos deben ser implementados en la clase que implemente esta interfaz para evitar
+         *     algún error de implementación.
+        */
+
+        // Método para crear un nuevo inventario
         Inventory CrearInventory(Inventory inventory);
 
-        // Método para obtener todos los producto
+        // Método para obtener todos los inventarios
         List<Inventory> ObtenerTodoInventory();
 
-        // Método para obtener un producto por su ID
+        // Método para obtener un inventario por su ID
         Inventory ObtenerInventoryPorId(int inventoryId);
+
+        // Método para obtener un inventario por id de producto
         List<Inventory> ObtenerInventariosPorProductId(int productId);
 
-        // Método para actualizar información de un producto
+        // Método para actualizar información de un inventario
         Inventory ActualizarInventory(int inventoryId, Inventory inventoryActualizado);
 
-        // Método para eliminar un producto
+        // Método para eliminar un inventario
         bool EliminarInventory(int inventoryId);
     }
 }

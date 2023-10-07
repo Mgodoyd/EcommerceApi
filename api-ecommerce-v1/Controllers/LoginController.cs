@@ -12,11 +12,17 @@ namespace api_ecommerce_v1.Controllers
     {
         private readonly ILoginService _loginService;
 
+        /*
+         * Inyectamos el Servicio
+         */
         public LoginController(ILoginService loginService)
         {
             _loginService = loginService;
         }
 
+        /*
+         *  Método para autenticar al usuario
+         */
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] Login requestData)
@@ -50,6 +56,9 @@ namespace api_ecommerce_v1.Controllers
             });
         }
 
+        /*
+         *     Método para actualizar la contraseña del usuario
+         */
         [HttpPut("{email}")]
         public IActionResult UpdatePassword(string email, [FromBody] Login requestData)
         {

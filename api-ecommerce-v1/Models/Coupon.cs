@@ -33,8 +33,7 @@ namespace api_ecommerce_v1.Models
 
             public Coupon()
             {
-                // Inicializa createdDate con la fecha y hora actuales del servidor
-                createdDate = DateTime.Now; // Utiliza DateTime.UtcNow si prefieres la hora UTC
+                createdDate = DateTime.Now;
             }
         }
 

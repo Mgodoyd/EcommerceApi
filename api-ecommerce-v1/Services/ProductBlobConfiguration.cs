@@ -6,17 +6,26 @@ namespace api_ecommerce_v1.Services
     {
         private readonly BlobServiceClient _blobServiceClient;
 
+        /*
+         *  Inyectamos el Servicio
+         */
         public ProductBlobConfiguration(IConfiguration configuration)
         {
             string key = configuration["Blob:ConnectionString"];
             _blobServiceClient = new BlobServiceClient(key);
         }
 
+        /*
+         *  Metodo para obtener el contenedor
+         */
         public BlobContainerClient GetBlobContainerClient(string containerName)
         {
             return _blobServiceClient.GetBlobContainerClient(containerName);
         }
 
+        /*
+         *  Metodo para subir un archivo al contenedor
+         */
         public async Task<string> UploadFileBlob(IFormFile file, string containerName)
         {
             Stream stream = file.OpenReadStream();
@@ -27,6 +36,9 @@ namespace api_ecommerce_v1.Services
             return fileName;
         }
 
+        /*
+         *  Método para eliminar un archivo del contenedor
+         */
         public string DeleteBlob(string blobName, string containerName)
         {
             BlobContainerClient containerClient = GetBlobContainerClient(containerName);

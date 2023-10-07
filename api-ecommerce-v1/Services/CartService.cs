@@ -18,9 +18,6 @@ namespace api_ecommerce_v1.Services
         public Cart CrearCart(Cart cart)
         {
             _context.Add(cart);
-            var cacheKey = $"CartByUserId_{cart.userId}";
-            _distributedCache.Remove(cacheKey);
-
             var cacheKey2 = "AllCarts";
             _distributedCache.Remove(cacheKey2);
 
@@ -28,41 +25,52 @@ namespace api_ecommerce_v1.Services
             return cart;
         }
 
-        public bool EliminarCart(int userId)
+        public bool EliminarCart(int Id)
         {
-            try
+            // Buscar el carrito por su Id en la base de datos
+            var cart = _context.Cart.FirstOrDefault(c => c.Id == Id);
+
+            if (cart == null)
             {
-                // Buscar todos los carritos del usuario en la base de datos
-                var userCarts = _context.Cart.Where(c => c.userId == userId).ToList();
-
-                if (userCarts == null || userCarts.Count == 0)
-                {
-                    return false; // No se encontraron carritos para el usuario
-                }
-
-                // Eliminar la entrada de caché para cada carrito del usuario
-                foreach (var cart in userCarts)
-                {
-                    var cacheKey = $"CartByUserId_{userId}";
-                    _distributedCache.Remove(cacheKey);
-                }
-
-                // Eliminar los carritos de la base de datos
-                _context.Cart.RemoveRange(userCarts);
-
-                // Guardar los cambios en la base de datos
-                _context.SaveChanges();
-
-                return true; // Todos los carritos del usuario se eliminaron con éxito
+                return false; // No se encontró el carrito
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error en EliminarCart: {ex}");
-                // Manejar la excepción (por ejemplo, registrarla o lanzarla nuevamente)
-                // Puedes agregar código aquí para manejar la excepción de acuerdo a tus necesidades
-                return false; // Indicar que la eliminación falló debido a una excepción
-            }
+
+
+
+
+            // Buscar todos los carritos del usuario en la base de datos
+            // var userCarts = _context.Cart.Where(c => c.userId == userId).ToList();
+
+            _context.Cart.Remove(cart);
+
+
+            // Eliminar la clave de caché para el carrito eliminado
+            var cacheKey3 = $"CartById_{cart.Id}";
+            _distributedCache.Remove(cacheKey3);
+
+            
+
+
+            // Encuentra al usuario en la base de datos
+            //  var user = _context.User.SingleOrDefault(u => u.Id == userId);
+
+
+
+            /*  if (user != null)
+              {*/
+
+            // Eliminar la clave de caché que almacena todos los carritos asociados al usuario
+            /*  var cacheKey2 = $"AllCartByUserId";
+              _distributedCache.Remove(cacheKey2);*/
+            // }
+
+            // Guardar los cambios en la base de datos
+            
+            _context.SaveChanges();
+
+            return true; // El carrito y todos los carritos del usuario se eliminaron con éxito
         }
+
 
 
 

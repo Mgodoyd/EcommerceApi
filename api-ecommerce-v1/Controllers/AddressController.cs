@@ -16,12 +16,19 @@ namespace api_ecommerce_v1.Controllers
         private readonly IAddress _addressService;
         private readonly IDistributedCache _distributedCache;
 
+        /*
+         *  Inyectamos el servicio
+         */
+
         public AddressController(IAddress addressService, IDistributedCache distributedCache)
         {
             _addressService = addressService;
             _distributedCache = distributedCache;
         }
 
+        /*
+         *  Método para obtener todas las direcciones
+         */
         [HttpGet]
         public IActionResult GetAllAddress()
         {
@@ -57,6 +64,10 @@ namespace api_ecommerce_v1.Controllers
                 return Ok(address);
             }
         }
+
+        /*
+         *  Método para obtener una dirección por id
+         */
 
         [HttpGet("{id}")]
         public IActionResult GetAddressById(int id)
@@ -94,6 +105,10 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *  Método para obtener una dirección por id 
+         */
+
         [HttpGet("address/{id}")]
         public IActionResult GetAddressByUser(int id)
         {
@@ -130,6 +145,10 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         * Método para obtener una dirección por id de usuario
+         */
+
         [HttpGet("user/{userId}")]
         public IActionResult GetAddressByUserId(int userId)
         {
@@ -138,7 +157,6 @@ namespace api_ecommerce_v1.Controllers
 
             if (cachedAddress != null)
             {
-                // Si hay datos en la caché, devuelve la cadena JSON como JSON
                 return Content(cachedAddress, "application/json");
             }
             else
@@ -161,24 +179,19 @@ namespace api_ecommerce_v1.Controllers
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
                 };
-
-                // Almacena la dirección como una cadena JSON en la caché de Redis
                 _distributedCache.SetString(cacheKey, serializedAddress, cacheEntryOptions);
 
-                // Devuelve la dirección como respuesta JSON
                 return Content(serializedAddress, "application/json");
             }
         }
 
-
-
-
+        /*
+         *  Método para crear una dirección
+         */
         [HttpPost]
         public IActionResult CreateAddress(Address address)
         {
             var newAddress = _addressService.CrearAddress(address);
-
-            // Aquí se crea la dirección en la base de datos
 
             if (newAddress == null)
             {
@@ -192,12 +205,14 @@ namespace api_ecommerce_v1.Controllers
             }
 
             var cacheKey = $"AddressByUserId_{newAddress.userId}";
-
-            // Elimina la entrada de caché existente o actualiza la caché aquí
             _distributedCache.Remove(cacheKey);
 
             return Ok(newAddress);
         }
+
+        /*
+         *  Método para actualizar una dirección
+         */
 
         [HttpPut("{id}")]
         public IActionResult UpdateAddress(int id, Address address)
@@ -216,14 +231,14 @@ namespace api_ecommerce_v1.Controllers
             }
 
             var cacheKey = $"AddressByUserId_{addressActualizado.userId}";
-
-            // Elimina la entrada de caché existente o actualiza la caché aquí
             _distributedCache.Remove(cacheKey);
 
             return Ok(addressActualizado);
         }
 
-
+        /*
+         * Método para eliminar una dirección
+         */
         [HttpDelete("{id}")]
         public IActionResult DeleteAddress(int id)
         {

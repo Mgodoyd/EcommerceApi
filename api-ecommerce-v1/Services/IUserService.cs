@@ -4,23 +4,32 @@ namespace api_ecommerce_v1.Services
 {
     public interface IUserService
     {
-        // Método para crear un nuevo cliente
+        /*
+         *     Métodos que debe tener la clase que implemente esta interfaz.
+         *     
+         *     Nota: Todos los métodos deben ser implementados en la clase que implemente esta interfaz para evitar
+         *     algún error de implementación.
+        */
+
+        // Método para crear un nuevo usuario
         User CrearUser(User user);
 
+        // Método para crear un nuevo usuario publico
         User CrearUserPublic(User user);
 
-        // Método para obtener todos los clientes
+        // Método para obtener todos los usuarios
         List<User> ObtenerTodosLosUser();
 
-        // Método para obtener un cliente por su ID
+        // Método para obtener un usuario por su ID
         User ObtenerUserPorId(int userId);
 
+        // Método para obtener un usuario por su ID admin
         User ObtenerUserAdminPorId(int userId);
 
-        // Método para actualizar información de un cliente
+        // Método para actualizar información de un usuario
         User ActualizarUser(int userId, User userActualizado);
 
-        // Método para eliminar un cliente
+        // Método para eliminar un usuario
         bool EliminarUser(int userId);
 
     }

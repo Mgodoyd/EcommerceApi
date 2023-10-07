@@ -9,12 +9,18 @@ namespace api_ecommerce_v1.Services
         private readonly ApplicationDbContext _context;
         private readonly IDistributedCache _distributedCache;
 
+        /*
+         *  Inyectamos los Servicios
+         */
         public AddressService(ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _context = context;
             _distributedCache = distributedCache;
         }
 
+        /*
+         *  Método para crear un nueva Address
+         */
         public Address CrearAddress(Address address)
         {
             _context.Add(address);
@@ -22,6 +28,9 @@ namespace api_ecommerce_v1.Services
             return address;
         }
 
+        /*
+         *  Método para eliminar una Address
+         */
         public bool EliminarAddress(int addressId)
         {
             var address = _context.Address.Find(addressId);
@@ -40,6 +49,9 @@ namespace api_ecommerce_v1.Services
             return true;
         }
 
+        /*
+         *  Método para actualizar una Address
+         */
         public Address ActualizarAddress(int addressId, Address addressActualizado)
         {
             var address = _context.Address.Find(addressId);
@@ -60,21 +72,29 @@ namespace api_ecommerce_v1.Services
             return address;
         }
 
+        /*
+         *  Método para obtener la address por id, incluyendo el usuario
+         */
         public Address ObtenerAddressPorId(int addressId)
         {
             var address = _context.Address.Include(a => a.user).FirstOrDefault(a => a.Id == addressId);
             return address;
         }
 
+        /*
+         *  Método para obtener la address por id de usuario, incluyendo el usuario cuando la dirección es principal
+         */
         public Address ObtenerAddressPorUser(int userId)
         {
             var address = _context.Address.Include(a => a.user).Where(a => a.main == true).FirstOrDefault(a => a.userId == userId);
             return address;
         }
 
+        /*
+         *    Método para obtener todas las address de un usuario
+         */
         public List<Address> ObtenerAddressPorUsuario(int userId)
         {
-            // Tu lógica para obtener todos los elementos del carrito asociados al usuario
             var addressDelUsuario = _context.Address
                 .Include(c => c.user)
                 .Where(c => c.userId == userId)
@@ -83,6 +103,9 @@ namespace api_ecommerce_v1.Services
             return addressDelUsuario;
         }
 
+        /*
+         *  Método para obtener todas las address, incluyendo el usuario
+         */
         public List<Address> ObtenerTodoslasAddress()
         {
             var address = _context.Address.Include(a => a.user).ToList();

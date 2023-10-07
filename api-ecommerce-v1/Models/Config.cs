@@ -29,19 +29,13 @@ namespace api_ecommerce_v1.Models
         [Required(ErrorMessage = "El campo 'correlative' es requerido.")]
         public string correlative { get; set; }
 
-      
-      /*  public int categoryId { get; set; }
-        public Category? category { get; set; }*/
-
-
 
         /*   [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
            public DateTime createdDate { get; set; }
 
            public Config()
            {
-               // Inicializa createdDate con la fecha y hora actuales del servidor
-               createdDate = DateTime.Now; // Utiliza DateTime.UtcNow si prefieres la hora UTC
+               createdDate = DateTime.Now; 
            }*/
     }
 }

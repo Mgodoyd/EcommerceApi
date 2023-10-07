@@ -13,7 +13,6 @@ namespace api_ecommerce_v1.Controllers
 {
     [Route("api/products")]
     [ApiController]
-  // [ServiceFilter(typeof(JwtAuthorizationFilter))]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -21,6 +20,9 @@ namespace api_ecommerce_v1.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IDistributedCache _distributedCache;
 
+        /*
+         * Inyectamos los servicios
+         */
         public ProductController(IProductService productService, IProductBlobConfiguration productBlobConfiguration, ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _productService = productService;
@@ -28,6 +30,10 @@ namespace api_ecommerce_v1.Controllers
             _context = context;
             _distributedCache = distributedCache;
         }
+
+        /*
+         * Método para obtener todos los productos, requiere token  
+         */
 
         [HttpGet]
         public IActionResult GetAllProducts()
@@ -49,7 +55,6 @@ namespace api_ecommerce_v1.Controllers
                 };
 
                 var serializedProducts = JsonConvert.SerializeObject(products, settings);
-
                 var encodedProducts = Encoding.UTF8.GetBytes(serializedProducts);
 
                 _distributedCache.Set(cacheKey, encodedProducts, new DistributedCacheEntryOptions
@@ -60,6 +65,10 @@ namespace api_ecommerce_v1.Controllers
                 return Ok(products);
             }
         }
+
+        /*
+         * Método para obtener todos los productos, no requiere token  
+        */
 
         [HttpGet("public")]
         [AllowAnonymous]
@@ -98,6 +107,10 @@ namespace api_ecommerce_v1.Controllers
                 }
             }
         }
+
+        /*
+         * Método para obtener un producto por id
+         */
 
         [HttpGet("{id}")]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
@@ -141,6 +154,10 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *   Método para obtener un producto por id, no requiere token
+        */
+
         [HttpGet("public/{id}")]
         [AllowAnonymous]
         public IActionResult GetProductByIdPublic(int id)
@@ -183,6 +200,9 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *  Método para crear un producto
+        */
 
         [HttpPost]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
@@ -190,9 +210,8 @@ namespace api_ecommerce_v1.Controllers
         {
             if (imageFile != null)
             {
-                // Cargar la imagen en Azure Blob Storage y obtener su nombre
                 string blobName = await _productBlobConfiguration.UploadFileBlob(imageFile, "ecommerce");
-                product.frontpage = blobName; // Asigna el nombre del blob como URL de la imagen
+                product.frontpage = blobName;
             }
 
             if (!ModelState.IsValid)
@@ -221,7 +240,9 @@ namespace api_ecommerce_v1.Controllers
             return CreatedAtAction(nameof(GetProductById), new { id = newProduct.Id }, newProduct);
         }
 
-
+        /*
+         *  Método para actualizar un producto
+        */
 
         [HttpPut("{id}")]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
@@ -229,23 +250,9 @@ namespace api_ecommerce_v1.Controllers
         {
             if (imageFile != null)
             {
-                // Cargar la imagen en Azure Blob Storage y obtener su nombre
                 string blobName = await _productBlobConfiguration.UploadFileBlob(imageFile, "ecommerce");
-                product.frontpage = blobName; // Asigna el nombre del blob como URL de la imagen
+                product.frontpage = blobName; 
             }
-
-         /*   if (product == null || id != product.Id)
-            {
-                // Crear un objeto JSON personalizado para el mensaje de error
-                var errorResponse = new
-                {
-                    mensaje = "Solicitud no válida."
-                };
-
-                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 400 (BadRequest)
-                var jsonResponse = JsonConvert.SerializeObject(errorResponse);
-                return BadRequest(jsonResponse);
-            }*/
 
             var updatedProduct = _productService.ActualizarProduct(id, product);
 
@@ -256,7 +263,6 @@ namespace api_ecommerce_v1.Controllers
                     mensaje = "Producto no encontrado."
                 };
 
-                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404 (NotFound)
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return NotFound(jsonResponse);
             }
@@ -273,6 +279,10 @@ namespace api_ecommerce_v1.Controllers
             return Ok(updatedProduct);
         }
 
+        /*
+         *  Método para eliminar un producto
+        */
+
         [HttpDelete("{id}")]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
         public async Task<IActionResult> DeleteProduct(int id)
@@ -286,12 +296,10 @@ namespace api_ecommerce_v1.Controllers
                     mensaje = "Producto no encontrado."
                 };
 
-                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404 (NotFound)
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return NotFound(jsonResponse);
             }
 
-            // Obtén el nombre del archivo del producto si está almacenado en el blob
             string blobName = product.frontpage; // Asegúrate de que esta propiedad coincida con la que almacena el nombre del blob
 
             if (!string.IsNullOrEmpty(blobName))
@@ -309,8 +317,6 @@ namespace api_ecommerce_v1.Controllers
 
                     // Luego, elimina el producto
                     _context.Product.Remove(product);
-
-                    // Guarda los cambios en una transacción
                     _context.SaveChanges();
                     transaction.Commit();
                 }
@@ -322,7 +328,6 @@ namespace api_ecommerce_v1.Controllers
                         mensaje = "Ocurrió un error al eliminar el producto y sus inventarios relacionados."
                     };
 
-                    // Serializar el objeto JSON y devolverlo con una respuesta HTTP 500 (InternalServerError) u otro código de error adecuado
                     var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                     return StatusCode(500, jsonResponse);
                 }
@@ -333,7 +338,6 @@ namespace api_ecommerce_v1.Controllers
                 mensaje = "Producto eliminado exitosamente."
             };
 
-            // Serializar el objeto JSON y devolverlo con una respuesta HTTP 200 (OK)
             var successJsonResponse = JsonConvert.SerializeObject(successResponse);
 
 

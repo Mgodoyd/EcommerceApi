@@ -33,9 +33,12 @@ namespace api_ecommerce_v1.Models
 
             public Boolean main { get; set; }
 
+           /*
+            * Relación con la tabla User
+           */
             public int userId { get; set; }
             public User? user { get; set; }
-            //public ICollection<User>? user { get; set; }
+          
 
             [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
             public DateTime createdDate { get; set; }
@@ -43,12 +46,9 @@ namespace api_ecommerce_v1.Models
             public Address()
             {
                 // Inicializa createdDate con la fecha y hora actuales del servidor
-                createdDate = DateTime.Now; // Utiliza DateTime.UtcNow si prefieres la hora UTC
+                createdDate = DateTime.Now; // Utiliza DateTime.UtcNow para la hora UTC
             }
-
-           
         }
-
     }
 
 

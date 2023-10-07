@@ -7,14 +7,22 @@ namespace api_ecommerce_v1.Services
     public class ProductService : IProductService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IDistributedCache _distributedCache;
 
-        public ProductService(ApplicationDbContext context, IDistributedCache distributedCache)
+        /*
+         * Inyectamos los servicios  
+        */
+        public ProductService(ApplicationDbContext context)
         {
             _context = context;
-            _distributedCache = distributedCache;
         }
 
+        /*
+         *  Método para crear un producto, recibe como parámetro un objeto de tipo Product, primero 
+         *  verifica si la categoría existe, si existe asocia el producto con la categoría existente,
+         *  si no existe crea una nueva categoría y asocia el producto con ella, luego agrega el producto
+         *  a la db, crea el inventario y asigna el id del producto al inventario, luego agrega el
+         *  el objeto a la db y guarda los cambios.
+         */
         public Product CrearProduct(Product product)
         {
             var existingCategory = _context.Category.FirstOrDefault(c => c.titles == product.category.titles);
@@ -27,11 +35,9 @@ namespace api_ecommerce_v1.Services
             else
             {
                 // La categoría no existe, crea una nueva categoría y asocia el producto con ella.
-                _context.Category.Add(product.category); // Asume que product.Category es la categoría asociada al producto.
+                _context.Category.Add(product.category); 
             }
 
-
-            // Agrega el producto al contexto y guarda los cambios en la base de datos.
             _context.Product.Add(product);
             _context.SaveChanges();
 
@@ -43,43 +49,60 @@ namespace api_ecommerce_v1.Services
                 amount = product.stock
             };
 
-            // Agrega el inventario al contexto y guarda los cambios en la base de datos.
             _context.Inventory.Add(inventory);
             _context.SaveChanges();
-
             return product;
         }
        
+        /*
+         *  Método para obtener todos los productos,incluyendo la categoría, el inventario y la galeria.
+         */
         public List<Product> ObtenerTodosLosProdcuts()
         {
             var products = _context.Product
-                .Include(p => p.inventory).Include(p => p.category).ToList();
+                .Include(p => p.inventory).Include(p => p.category).Include(p => p.Galerys).ToList();
             return products;
         }
 
+        /*
+         *  Método para obtener todos los productos públicos, incluyendo la categoría,el inventario y la galeria.
+         */
         public List<Product> ObtenerTodosLosProdcutsPublic()
         {
             var products= _context.Product.Include(p => p.category).Include(p => p.Galerys).Include(p => p.inventory).ToList();
             return products;
         }
 
-
+        /*
+         *  Método para obtener un producto por su id, incluyendo la categoría, el inventario y la galeria.
+        */
         public Product ObtenerProductPorId(int productId)
         {
-            return _context.Product.Include(p => p.inventory).Include(p => p.category).Include(p => p.Galerys).FirstOrDefault(p => p.Id == productId);
+            return _context.Product
+                .Include(p => p.inventory)
+                .Include(p => p.category)
+                .Include(p => p.Galerys)
+                .FirstOrDefault(p => p.Id == productId);
         }
 
+        /*
+         *  Método para obtener un producto público por su id, incluyendo la categoría, el inventario y la galeria.
+        */
         public Product ObtenerProductPorIdPublic(int productId)
         {
             return _context.Product
                 .Include(p => p.inventory)
                 .Include(p => p.category)
-                .Include(p => p.Galerys) // Nota la mayúscula en Galerys, que refleja el nombre de la propiedad en la clase Product
+                .Include(p => p.Galerys) 
                 .FirstOrDefault(p => p.Id == productId);
         }
 
-
-
+        /*
+         *  Método para actualizar un producto, de igual manera que el método para crear un producto,
+         *  verifica si la categoría existe, si existe asocia el producto con la categoría existente,
+         *  si no existe crea una nueva categoría y asocia el producto con ella, luego actualiza las
+         *  columnas de la tabla Product, marca la entidad como modificada y guarda los cambios.
+        */
         public Product ActualizarProduct(int productId, Product productActualizado)
         {
             // Verifica si la nueva categoría ya existe en la base de datos.
@@ -101,42 +124,35 @@ namespace api_ecommerce_v1.Services
 
             if (productExistente == null)
             {
-                return null; // El cliente no existe
+                return null; 
             }
-
-            // Actualiza las propiedades de User
             productExistente.title = productActualizado.title;
             productExistente.frontpage = productActualizado.frontpage;
             productExistente.price = productActualizado.price;
             productExistente.description = productActualizado.description;
             productExistente.content = productActualizado.content;
             productExistente.stock = productActualizado.stock;
-          //  productExistente.sales = productActualizado.sales;
-            productExistente.points = productActualizado.points;
-           // productExistente.state = productActualizado.state;
             productExistente.category = productActualizado.category;
-
-            // Marca la entidad User como modificada
+           
             _context.Entry(productExistente).State = EntityState.Modified;
-
-            // Guarda los cambios en la base de datos
             _context.SaveChanges();
-
             return productExistente;
         }
 
+        /*
+         *  Método para eliminar un producto, primero verifica si el producto existe, si existe
+         *  lo elimina de la db y guarda los cambios.
+        */
         public bool EliminarProduct(int productId)
         {
             var productExistente = _context.Product.FirstOrDefault(p => p.Id == productId);
 
             if (productExistente == null)
             {
-                return false; // El producto no existe
+                return false; 
             }
 
             _context.Product.Remove(productExistente);
-
-
             _context.SaveChanges();
             return true;
         }

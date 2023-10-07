@@ -290,7 +290,6 @@ namespace api_ecommerce_v1.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("password")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -371,9 +370,6 @@ namespace api_ecommerce_v1.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("inventoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("points")
                         .HasColumnType("int");
 
                     b.Property<int>("price")

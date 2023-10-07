@@ -14,11 +14,18 @@ namespace api_ecommerce_v1.Controllers
         private readonly IContact _contactService;
         private readonly IDistributedCache _distributedCache;
 
+        /*
+         *  Inyectamos los Servicios
+         */
         public ContactController(IContact contactService, IDistributedCache distributedCache)
         {
             _contactService = contactService;
             _distributedCache = distributedCache;
         }
+
+        /*
+         *  Método para obtener todos los contactos
+         */
 
         [HttpGet]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
@@ -58,6 +65,10 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         * Método para obtener un contacto por su id
+         */
+
         [HttpGet("{id}")]
         public IActionResult GetByIdContacts(int id)
         {
@@ -95,20 +106,24 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *  Método para crear un contacto
+         */
 
         [HttpPost]
         public IActionResult CreateContacts(Contact contact)
         {
             var contactCreado = _contactService.CreateContacts(contact);
 
-
             var cacheKey = $"AllContacts";
-
-            // Elimina la entrada de caché existente
             _distributedCache.Remove(cacheKey);
 
             return CreatedAtAction(nameof(GetByIdContacts), new { id = contactCreado.Id }, contactCreado);
         }
+
+        /*
+         *  Método para actualizar un contacto
+         */
 
         [HttpPut("{id}")]
         public IActionResult UpdateContacts(int id, Contact contact)
@@ -126,12 +141,14 @@ namespace api_ecommerce_v1.Controllers
             }
 
             var cacheKey = $"AllContacts";
-
-            // Elimina la entrada de caché existente
             _distributedCache.Remove(cacheKey);
 
             return Ok(contactActualizado);
         }
+
+        /*
+         *  Método para eliminar un contacto
+         */
 
         [HttpDelete("{id}")]
         public IActionResult DeleteContacts(int id)

@@ -13,10 +13,16 @@ namespace api_ecommerce_v1.Models
             [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'stock' debe ser un número.")]
             public int? amount { get; set; }
 
+            /*
+             * Relación con la tabla Product
+             */
             public int productId { get; set; }
             public Product? products { get; set; }
             public ICollection<Product>? product { get; set; }
 
+            /*
+             *  Relación con la tabla User
+            */
             public int userId { get; set; }
             public User? users { get; set; }
             public ICollection<User>? user { get; set; }

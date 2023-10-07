@@ -9,17 +9,24 @@ namespace api_ecommerce_v1.Controllers
 {
     [Route("api/Inventory")]
     [ApiController]
-    // [Produces("application/json")]
     [ServiceFilter(typeof(JwtAuthorizationFilter))]
     public class InventoryController : ControllerBase
     {
         private readonly IInventory _inventoryService;
         private readonly IDistributedCache _distributedCache;
+
+        /*
+         *  Inyectamos los servicios
+         */ 
         public InventoryController(IInventory inventory, IDistributedCache distributedCache)
         {
             _inventoryService = inventory;
             _distributedCache = distributedCache;
         }
+
+        /*
+         *  Método para obtener todos los inventarios
+         */
 
         [HttpGet]
         public IActionResult GetAllInventory()
@@ -58,6 +65,10 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *  Método para obtener un inventario por id
+         */
+
         [HttpGet("{id}")]
         public IActionResult GetInventoryById(int id)
         {
@@ -94,6 +105,10 @@ namespace api_ecommerce_v1.Controllers
                 return Ok(inventory);
             }
         }
+
+        /*
+         *    Método para obtener un inventario por el id del producto
+        */
 
         [HttpGet("product/{id}")]
         public IActionResult ObtenerInventariosPorProductId(int productId)
@@ -132,6 +147,10 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *  Método para crear un inventario
+         */
+
         [HttpPost]
         public IActionResult CreateInventory([FromForm] Inventory inventory)
         {
@@ -148,6 +167,10 @@ namespace api_ecommerce_v1.Controllers
 
             return Ok(_inventory);
         }
+
+        /*
+         *  Método para actualizar un inventario
+         */
 
         [HttpPut("{id}")]
         public IActionResult UpdateInventory(int id, Inventory inventory)
@@ -167,6 +190,10 @@ namespace api_ecommerce_v1.Controllers
 
             return Ok(inventoryActualizado);
         }
+
+        /*
+         *  Método para eliminar un inventario
+         */
 
         [HttpDelete("{id}")]
         public IActionResult DeleteInventory(int id)

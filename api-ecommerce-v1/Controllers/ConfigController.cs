@@ -18,6 +18,10 @@ namespace api_ecommerce_v1.Controllers
         private readonly ICategory _categoryService;
         private readonly IProductBlobConfiguration _productBlobConfiguration;
         private readonly IDistributedCache _distributedCache;
+
+        /*
+         *  Inyecta los servicios necesarios para el controlador
+         */
         public ConfigController( IConfig configService, ICategory categoryService, IProductBlobConfiguration productBlobConfiguration, IDistributedCache distributedCache)
         {
             _configService = configService;
@@ -25,6 +29,10 @@ namespace api_ecommerce_v1.Controllers
             _productBlobConfiguration = productBlobConfiguration;
             _distributedCache = distributedCache;
         }
+
+        /*
+         *  Método para actualizar la configuración de la Tienda 
+         */
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateConfig(int id, [FromForm] Config config, IFormFile? imageFile)
@@ -56,6 +64,9 @@ namespace api_ecommerce_v1.Controllers
             return Ok(configActualizado);
         }
 
+        /*
+         * Método para obtener la configuración de la Tienda por su Id
+         */
         [HttpGet("{id}")]
         public IActionResult GetConfigById(int id)
         {
@@ -94,16 +105,17 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
-
+        /*
+         *  Método para Crear una configuración de la Tienda
+         */
 
         [HttpPost]
         public async Task<IActionResult> CrearConfig([FromForm] Config config, IFormFile imageFile)
         {
             if (imageFile != null)
             {
-                // Cargar la imagen en Azure Blob Storage y obtener su nombre
                 string blobName = await _productBlobConfiguration.UploadFileBlob(imageFile, "ecommerce");
-                config.logo = blobName; // Asigna el nombre del blob como URL de la imagen
+                config.logo = blobName; 
             }
 
             if (!ModelState.IsValid)

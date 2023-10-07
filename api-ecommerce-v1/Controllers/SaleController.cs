@@ -16,33 +16,34 @@ namespace api_ecommerce_v1.Controllers
         private readonly ISale _saleService;
         private readonly IDistributedCache _distributedCache;
 
+        /*
+         * Inyectamos los servicios
+         */
         public SaleController(ISale saleService,IDistributedCache distributedCache)
         {
             _saleService = saleService;
             _distributedCache = distributedCache;
         }
 
+        /*
+         * Obtenemos todas las ventas
+         */
+
         [HttpGet]
         public IActionResult GetAllSales()
         {
-            // Intenta obtener los datos de la caché
             var cachedData = _distributedCache.GetString("SalesData");
 
             if (cachedData != null)
             {
-                // Si los datos están en la caché, devuélvelos
                 var sales = JsonConvert.DeserializeObject<IEnumerable<Sales>>(cachedData);
                 return Ok(sales);
             }
             else
             {
-                // Si los datos no están en la caché, obtén los datos de tu servicio
                 var sales = _saleService.ObtenerTodoslasSale();
 
-                // Convierte los datos a JSON
                 var serializedData = JsonConvert.SerializeObject(sales);
-
-                // Almacena los datos en la caché con una expiración de 5 minutos (por ejemplo)
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
@@ -54,21 +55,21 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *  Obtenemos una venta por su id
+        */
         [HttpGet("{id}")]
         public IActionResult GetSalesById(int id)
         {
-            // Intenta obtener la venta desde la caché de Redis
             var cachedSale = _distributedCache.GetString($"Sale_{id}");
 
             if (cachedSale != null)
             {
-                // Si la venta está en la caché, devuélvela
                 var sale = JsonConvert.DeserializeObject<Sales>(cachedSale);
                 return Ok(sale);
             }
             else
             {
-                // Si la venta no está en la caché, obtén los datos de tu servicio
                 var sale = _saleService.ObtenerSalePorId(id);
 
                 if (sale == null)
@@ -82,16 +83,12 @@ namespace api_ecommerce_v1.Controllers
                     return NotFound(jsonResponse);
                 }
 
-                // Convierte la venta a JSON
                 var settings = new JsonSerializerSettings()
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 };
 
                 var serializedSale = JsonConvert.SerializeObject(sale, settings);
-
-
-                // Almacena la venta en la caché de Redis con una expiración (por ejemplo, 30 minutos)
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(3)
@@ -103,16 +100,17 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         * Obtenemos el total de ventas sin importar el estado
+        */
 
         [HttpGet("totalVendido")]
         public IActionResult GetTotalSales()
         {
-            // Intenta obtener el total de ventas desde la caché
             var cachedTotalSales = _distributedCache.GetString("TotalSales");
 
             if (cachedTotalSales != null)
             {
-                // Si el total de ventas está en la caché, devuélvelo
                 var totalSales = JsonConvert.DeserializeObject<decimal>(cachedTotalSales);
                 var response = new
                 {
@@ -123,13 +121,9 @@ namespace api_ecommerce_v1.Controllers
             }
             else
             {
-                // Si el total de ventas no está en la caché, obtén los datos de tu servicio
                 var totalSales = _saleService.ObtenerTotaldeSalesGeneral();
-
-                // Convierte el total de ventas a JSON
                 var serializedTotalSales = JsonConvert.SerializeObject(totalSales);
 
-                // Almacena el total de ventas en la caché con una expiración de 5 minutos (por ejemplo)
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
@@ -146,16 +140,17 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *  Obtenemos el total de ventas por estado entregado
+        */
 
         [HttpGet("totalVentas")]
         public IActionResult GetTotalSalesCompletado()
         {
-            // Intenta obtener el total de ventas completadas desde la caché de Redis
             var cachedTotalSalesCompletado = _distributedCache.GetString("TotalSalesCompletado");
 
             if (cachedTotalSalesCompletado != null)
             {
-                // Si el total de ventas completadas está en la caché, devuélvelo
                 var totalSalesCompletado = JsonConvert.DeserializeObject<decimal>(cachedTotalSalesCompletado);
                 var response = new
                 {
@@ -166,13 +161,9 @@ namespace api_ecommerce_v1.Controllers
             }
             else
             {
-                // Si el total de ventas completadas no está en la caché, obtén los datos de tu servicio
                 var totalSalesCompletado = _saleService.ObtenerTotaldeSalesVendido();
 
-                // Convierte el total de ventas completadas a JSON
                 var serializedTotalSalesCompletado = JsonConvert.SerializeObject(totalSalesCompletado);
-
-                // Almacena el total de ventas completadas en la caché de Redis con una expiración (por ejemplo, 30 minutos)
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
@@ -189,15 +180,17 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *     Obtenemos el monto total ganado por ventas
+         */
+
         [HttpGet("total")]
         public IActionResult GetTotalSalesTotal()
         {
-            // Intenta obtener el total de ventas totales desde la caché de Redis
             var cachedTotalSalesTotal = _distributedCache.GetString("TotalSalesTotal");
 
             if (cachedTotalSalesTotal != null)
             {
-                // Si el total de ventas totales está en la caché, devuélvelo
                 var totalSalesTotal = JsonConvert.DeserializeObject<decimal>(cachedTotalSalesTotal);
                 var response = new
                 {
@@ -208,13 +201,9 @@ namespace api_ecommerce_v1.Controllers
             }
             else
             {
-                // Si el total de ventas totales no está en la caché, obtén los datos de tu servicio
                 var totalSalesTotal = _saleService.ObtenerTotaldeSalesTotal();
 
-                // Convierte el total de ventas totales a JSON
                 var serializedTotalSalesTotal = JsonConvert.SerializeObject(totalSalesTotal);
-
-                // Almacena el total de ventas totales en la caché de Redis con una expiración (por ejemplo, 30 minutos)
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
@@ -230,6 +219,10 @@ namespace api_ecommerce_v1.Controllers
                 return Ok(response);
             }
         }
+
+        /*
+         * Obtener todas las ventas del usuario por el ID del mismo 
+         */
 
         [HttpGet("user/{id}")]
         public IActionResult GetSaleByUserId(int id)
@@ -267,7 +260,9 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
-
+        /*
+         *  Método para crear una venta
+         */
 
         [HttpPost]
         public IActionResult CreateSale(Sales sale)
@@ -286,6 +281,9 @@ namespace api_ecommerce_v1.Controllers
             return CreatedAtAction(nameof(GetSalesById), new { id = saleCreado.Id }, saleCreado);
         }
 
+        /*
+         *    Método para actualizar una venta
+         */
 
         [HttpPut("{id}")]
         public IActionResult UpdateSale(int id,  Sales sale)
@@ -315,6 +313,10 @@ namespace api_ecommerce_v1.Controllers
 
             return Ok(saleActualizado);
         }
+
+        /*
+         * Método para eliminar una venta
+         */
 
         [HttpDelete("{id}")]
         public IActionResult DeleteSale(int id)

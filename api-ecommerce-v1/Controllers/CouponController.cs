@@ -15,11 +15,18 @@ namespace api_ecommerce_v1.Controllers
         private readonly ICoupon _couponService;
         private readonly IDistributedCache _distributedCache;
 
+        /*
+         *  Inyectamos los servicios
+         */
         public CouponController(ICoupon couponService, IDistributedCache distributedCache)
         {
             _couponService = couponService;
             _distributedCache = distributedCache;
         }
+
+        /*
+         *  Método para obtener todos los cupones
+         */
 
         [HttpGet]
         public IActionResult GetAllCoupon()
@@ -58,6 +65,10 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *  Método para obtener un cupón por su id
+         */
+
         [HttpGet("{id}")]
         public IActionResult GetCouponById(int id)
         {
@@ -95,6 +106,9 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        ´/*
+          *  Método para crear un cupón
+          */
 
         [HttpPost]
         public IActionResult CreateCoupon(Coupon coupon)
@@ -102,13 +116,14 @@ namespace api_ecommerce_v1.Controllers
             _couponService.CrearCoupon(coupon);
 
             var cacheKey = $"AllCoupons";
-
-            // Elimina la entrada de caché existente
             _distributedCache.Remove(cacheKey);
 
             return Ok(coupon);
         }
 
+        /*
+         * Método para validar un cupón
+         */
         [HttpGet("validate/{coupon}")]
         public IActionResult ValidateCoupon(string coupon)
         {
@@ -146,6 +161,9 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *  Método para actualizar un cupón
+         */
         [HttpPut("{id}")]
         public IActionResult UpdateCoupon(int id, Coupon coupon)
         {
@@ -168,6 +186,9 @@ namespace api_ecommerce_v1.Controllers
             return Ok(couponActualizado);
         }
 
+        /*
+         * Método para eliminar un cupón
+         */
         [HttpDelete("{id}")]
         public IActionResult DeleteCoupon(int id)
         {
@@ -188,7 +209,6 @@ namespace api_ecommerce_v1.Controllers
                 mensaje = "Cupon eliminado exitosamente."
             };
 
-            // Serializar el objeto JSON y devolverlo con una respuesta HTTP 200 (OK)
             var successJsonResponse = JsonConvert.SerializeObject(successResponse);
             return Ok(successJsonResponse);
         }

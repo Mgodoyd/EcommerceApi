@@ -17,6 +17,9 @@ namespace api_ecommerce_v1.Controllers
         private readonly IProductBlobConfiguration _productBlobConfiguration;
         private readonly IDistributedCache _distributedCache;
 
+        /*
+         *  Inyectamos los servicios
+         */
         public GaleryController(ApplicationDbContext context, IGalery galeryService, IProductBlobConfiguration productBlobConfiguration, IDistributedCache distributedCache)
         {
             _context = context;
@@ -24,6 +27,10 @@ namespace api_ecommerce_v1.Controllers
             _productBlobConfiguration = productBlobConfiguration;
             _distributedCache = distributedCache;
         }
+
+        /*
+         *  Método para obtener todas las galerías 
+         */
 
         [HttpGet("{galeryId}")]
         public IActionResult GetGaleryById(int galeryId)
@@ -33,13 +40,11 @@ namespace api_ecommerce_v1.Controllers
 
             if (cachedGalery != null)
             {
-                // Deserializa el JSON como una lista de galería
                 var galery = JsonConvert.DeserializeObject<List<Galery>>(cachedGalery);
                 return Ok(galery);
             }
             else
             {
-                // Si no se encuentra en caché, obtén la galería y almacénala en caché
                 var galery = _galeryService.ObtenerGaleryPorProductId(galeryId);
 
                 if (galery == null)
@@ -53,7 +58,6 @@ namespace api_ecommerce_v1.Controllers
                     return NotFound(jsonResponse);
                 }
 
-                // Serializa la galería y almacénala en caché
                 var serializedGalery = JsonConvert.SerializeObject(galery);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
@@ -65,7 +69,9 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
-
+        /*
+         *  Método para crear una galería
+         */
 
         [HttpPost]
         public async Task<IActionResult> CreateGalery([FromForm] Galery galery, IFormFile imageFile)
@@ -83,13 +89,14 @@ namespace api_ecommerce_v1.Controllers
             var galeryCreada = _galeryService.CrearGalery(galery);
 
             var cacheKey = $"GaleryAll";
-
-            // Elimina la entrada de caché existente
             _distributedCache.Remove(cacheKey);
 
             return Ok(galeryCreada);
         }
 
+        /*
+         *  Método para actualizar una galería
+         */
         [HttpPut]
         public async Task<IActionResult> UpdateGalery([FromForm] Galery galery, IFormFile imageFile)
         {
@@ -116,12 +123,14 @@ namespace api_ecommerce_v1.Controllers
             }
 
             var cacheKey = $"GaleryAll";
-
-            // Elimina la entrada de caché existente
             _distributedCache.Remove(cacheKey);
 
             return Ok(galeryActualizada);
         }
+
+        /*
+         *  Método para eliminar una galería
+         */
 
         [HttpDelete("{id}")]
         public IActionResult DeleteGalery(int id)

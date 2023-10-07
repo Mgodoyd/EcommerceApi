@@ -24,7 +24,7 @@ namespace api_ecommerce_v1.Models
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'envio_price' debe ser un número.")]
         public int envio_price { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "El campo 'transaction' es requerido.")]
         [StringLength(50)]
         public string transaction { get; set; }
 
@@ -44,18 +44,24 @@ namespace api_ecommerce_v1.Models
 
         public Sales()
         {
-            // Inicializa createdDate con la fecha y hora actuales del servidor
-            createdDate = DateTime.Now; // Utiliza DateTime.UtcNow si prefieres la hora UTC
+            createdDate = DateTime.Now;
         }
 
-        // Propiedad de navegación para la relación con Login
+        /*
+         * Relación con la tabla User 
+        */
         public int userId { get; set; }
         public User? user { get; set; }
 
+        /*
+         *  Relación con la tabla Address 
+        */
         public int addressId { get; set; }
         public Address? address { get; set; }
 
-        
+        /*
+         *  Relación con la tabla NSale 
+        */
         public List<NSale>? nsale { get; set; }
     }
 }

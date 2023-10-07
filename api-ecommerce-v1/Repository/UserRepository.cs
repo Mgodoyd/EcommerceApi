@@ -12,33 +12,33 @@ namespace api_ecommerce_v1.Repository
             _context = context;
         }
 
-        // Método para obtener todos los clientes
+        // Método para obtener todos los usuarios
         public List<User> ObtenerTodosLosUser()
         {
             return _context.User.ToList();
         }
 
-        // Método para obtener un cliente por su ID
+        // Método para obtener un usuario por su ID
         public User ObtenerUserPorId(int userId)
         {
             return _context.User.FirstOrDefault(c => c.Id == userId);
         }
 
-        // Método para crear un nuevo cliente
+        // Método para crear un nuevo usuario
         public void CrearUser(User user)
         {
             _context.User.Add(user);
             _context.SaveChanges();
         }
 
-        // Método para actualizar información de un cliente
+        // Método para actualizar información de un usuario
         public void ActualizarUser(User user)
         {
             _context.Entry(user).State = EntityState.Modified;
             _context.SaveChanges();
         }
 
-        // Método para eliminar un cliente
+        // Método para eliminar un usuario
         public void EliminarUser(int userId)
         {
             var user = _context.User.FirstOrDefault(c => c.Id == userId);

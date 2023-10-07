@@ -16,11 +16,19 @@ namespace api_ecommerce_v1.Services
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _dbContext;
 
+        /*
+         * Inyectamos los Servicios
+         */
+
         public LoginService(IConfiguration configuration, ApplicationDbContext dbContext)
         {
             _configuration = configuration;
             _dbContext = dbContext;
         }
+
+        /*
+         *  Método para autenticar un usuario y validación de la contraseña
+         */
         public string Authenticate(Login user, string plainPassword)
         {
             // Buscar el usuario en la base de datos por correo electrónico
@@ -36,30 +44,28 @@ namespace api_ecommerce_v1.Services
                     return GenerateJwtToken(existingUser);
                 }
             }
-
-            // Autenticación fallida
             return null;
         }
 
-
+        /*
+         *  Método para generar el token JWT tipo sh256
+         */
         public string GenerateJwtToken(Login login)
         {
             var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
 
-            // Calcula la fecha de expiración (30 minutos desde ahora)
-            var expiration = DateTime.UtcNow.AddSeconds(1800);
+            var expiration = DateTime.UtcNow.AddSeconds(3600);
 
             var claimsList = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
-                new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(expiration).ToUnixTimeSeconds().ToString()), // Agrega el tiempo de expiración
+                new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(expiration).ToUnixTimeSeconds().ToString()),
                 new Claim("id", login.Id.ToString()),
                 new Claim("rol", login.rol.ToString()),
         
         };
-
 
             var claims = claimsList.ToArray();
 
@@ -76,7 +82,9 @@ namespace api_ecommerce_v1.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-
+        /*
+         *  Método para validar el token JWT y si el token es válido y contiene los roles de administrador o cliente
+         */
 
         public bool ValidateToken(string token)
         {
@@ -107,12 +115,14 @@ namespace api_ecommerce_v1.Services
             }
             catch (Exception ex)
             {
-                // Si se lanza una excepción, el token no es válido
                 Console.WriteLine("Error al validar token: " + ex.Message);
                 return false;
             }
         }
 
+        /*
+         *  Método para actualizar la contraseña de un usuario
+         */
         public Login UpdatePassword(string email, Login login)
         {
             var existingUser = _dbContext.Login.FirstOrDefault(u => u.email == email);
@@ -131,9 +141,6 @@ namespace api_ecommerce_v1.Services
         }
 
     }
-
-
-
 }
 
 

@@ -37,31 +37,23 @@ namespace api_ecommerce_v1.Models
         [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'stock' debe ser un número.")]
         public int stock { get; set; }
 
-        /*[Required(ErrorMessage = "El campo 'sales' es requerido.")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'sales' debe ser un número.")]
-        public int sales { get; set; }*/
-
-        [Required(ErrorMessage = "El campo 'points' es requerido.")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'points' debe ser un número.")]
-        public int points { get; set; }
-
-        //[Required(ErrorMessage = "El campo 'state' es requerido.")]
-      /* [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'state' debe ser un número.")]
-        public string? state { get; set; }*/
-
-        //        [Required(ErrorMessage = "El campo 'product' es requerido.")]
-
+        /*
+         * Relación con la tabla Inventory  
+         */
         public int inventoryId { get; set; }
 
         [JsonIgnore]
         public Inventory? inventory { get; set; }
 
+        /*
+         *   Relación con la tabla Category  
+        */
         public int categoryId { get; set; }
-
-
         public Category? category { get; set; }
 
-
+        /*
+         *  Relación con la tabla Galery  
+        */
 
         //public Galery? galerys { get; set; }
         public ICollection<Galery>? Galerys { get; set; }
@@ -71,7 +63,6 @@ namespace api_ecommerce_v1.Models
 
         public Product()
         {
-           // state = "edition";
             createdDate = DateTime.Now; 
         }
     }

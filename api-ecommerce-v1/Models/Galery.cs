@@ -19,6 +19,9 @@ namespace api_ecommerce_v1.Models
         [Display(Name = "Image")]
         public IFormFile ImageFile { get; set; }
 
+        /*
+         * Relación a la tabla Product
+        */
         public int productId { get; set; }
         [JsonIgnore]
         public Product? product { get; set; }

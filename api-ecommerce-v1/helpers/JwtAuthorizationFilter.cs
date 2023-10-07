@@ -8,11 +8,20 @@ namespace api_ecommerce_v1.helpers
     {
         private readonly ILoginService _loginService;
 
+        /*
+         * Inyectamos la Interfaz del Login 
+         */
         public JwtAuthorizationFilter(ILoginService loginService)
         {
             _loginService = loginService;
         }
 
+        /*
+         * Método que valida el token JWT, primero valida si existe el token en el header de la petición,
+         * si no existe, retorna un UnauthorizedObjectResult con un mensaje de error. Luego valida si el token
+         * que se envia es válido, si no es válido, retorna un UnauthorizedObjectResult con un mensaje de error.
+         * si es válido,permite realizar la acción correspondiente.
+         */
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var authorizationHeader = context.HttpContext.Request.Headers.ContainsKey("Authorization")

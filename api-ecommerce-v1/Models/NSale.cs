@@ -15,8 +15,8 @@ namespace api_ecommerce_v1.Models
         public int subtotal { get; set; }
 
 
-        [Required(ErrorMessage = "El campo 'envio_price' es requerido.")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'envio_price' debe ser un número.")]
+        [Required(ErrorMessage = "El campo 'amount' es requerido.")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'amount' debe ser un número.")]
         public int amount { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -24,16 +24,24 @@ namespace api_ecommerce_v1.Models
 
         public NSale()
         {
-            // Inicializa createdDate con la fecha y hora actuales del servidor
-            createdDate = DateTime.Now; // Utiliza DateTime.UtcNow si prefieres la hora UTC
+            createdDate = DateTime.Now;
         }
 
+        /*
+         * Relacion con la tabla Product
+         */
         public int productId { get; set; }
         public Product? products { get; set; }
 
+        /*
+         * Relacion con la tabla User
+        */
         public int userId { get; set; }
         public List<User>? users { get; set; }
 
+        /*
+         *   Relacion con la tabla Sales
+        */
         public int SalesId { get; set; }
 
         [JsonIgnore]

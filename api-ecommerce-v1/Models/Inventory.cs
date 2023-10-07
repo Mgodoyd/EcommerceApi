@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace api_ecommerce_v1.Models
 {
@@ -9,8 +8,6 @@ namespace api_ecommerce_v1.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
-        
 
         [Required(ErrorMessage = "El campo 'amount' es requerido.")]
         public int amount { get; set; }
@@ -29,6 +26,9 @@ namespace api_ecommerce_v1.Models
             createdDate = DateTime.Now;
         }
 
+        /*
+         * Relación a la tabla Product
+        */
         public int productId { get; set; }
        // [JsonIgnore]
         public Product? product { get; set; }

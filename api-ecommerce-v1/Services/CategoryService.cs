@@ -9,12 +9,18 @@ namespace api_ecommerce_v1.Services
         private readonly ApplicationDbContext _context;
         private readonly IDistributedCache _distributedCache;
 
+        /*
+         *  Inyectamos el Servicio 
+         */
         public CategoryService(ApplicationDbContext context, IDistributedCache distributedCache)
         {
             _context = context;
             _distributedCache = distributedCache;
         }
 
+        /*
+         *  Metodo para crear una categoria
+         */
         public Category CrearCategory(Category category)
         {
             _context.Category.Add(category);
@@ -22,18 +28,27 @@ namespace api_ecommerce_v1.Services
             return category;
         }
 
+        /*
+         *  Método para Obtener una categoria por su Id
+         */
         public Category ObtenerCategoryporId(int categoryId)
         {
             var category = _context.Category.Find(categoryId);
             return category;
         }
 
+        /*
+         *  Método para obtener todas las categorias
+         */
         public List<Category> ObtenerTodosCategory()
         {
             var category = _context.Category.ToList();
             return category;
         }
 
+        /*
+         *  Método para eliminar una categoria
+         */
         public bool eliminarCategory(int categoryId)
         {
             var category = _context.Category.Find(categoryId);
@@ -53,6 +68,9 @@ namespace api_ecommerce_v1.Services
             return true;
         }
 
+        /*
+         *  Método para obtener todas las categorias publicas no requiere token
+         */
         public List<Category> ObtenerTodosCategoryPublic()
         {
             var category = _context.Category.ToList();

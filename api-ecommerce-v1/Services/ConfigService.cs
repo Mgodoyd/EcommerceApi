@@ -4,17 +4,28 @@ namespace api_ecommerce_v1.Services
     public class ConfigService : IConfig
     {
         private readonly ApplicationDbContext _context;
+
+        /*
+         * Inyectamos el Servicio
+         */
         public ConfigService(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        /*
+         *  Método para crear un nueva configuración
+         */
         public Config CrearConfig(Config config)
         {
             _context.Config.Add(config);
             _context.SaveChanges();
             return config;
         }
+
+        /*
+         *  Método para actualizar una configuración
+         */
         public Config ActualizarConfig(int configId, Config confiActualizado)
         { 
             
@@ -32,6 +43,9 @@ namespace api_ecommerce_v1.Services
             return config;
         }
 
+        /*
+         *  Método para obtener la configuración por id
+         */
         public Config ObtenerConfyporId(int configId)
         {
             var config = _context.Config.Find(configId);

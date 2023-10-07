@@ -16,11 +16,19 @@ namespace api_ecommerce_v1.Controllers
     {
         private readonly ICategory _categoryService;
         private readonly IDistributedCache _distributedCache;
+
+        /*
+         *  Inyectamos los servicios
+         */
         public CategoryController(ICategory categoryService, IDistributedCache distributedCache)
         {
             _categoryService = categoryService;
             _distributedCache = distributedCache;
         }
+
+        /*
+         *  Método para crear una nueva categoría
+         */
 
         [HttpPost]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
@@ -36,6 +44,10 @@ namespace api_ecommerce_v1.Controllers
 
             return Ok(category);
         }
+
+        /*
+         *  Método para obtener todas las categorías
+         */
 
         [HttpGet]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
@@ -76,6 +88,10 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
+        /*
+         *  Método para obtener todas las categorías públicas no requiere token
+         */
+
         [HttpGet("public")]
         [AllowAnonymous]
         public IActionResult GetAllCategoryPublic()
@@ -115,7 +131,9 @@ namespace api_ecommerce_v1.Controllers
             }
         }
 
-
+        /*
+         *  Método para eliminar una categoría
+         */
 
         [HttpDelete("{categoryId}")]
         [ServiceFilter(typeof(JwtAuthorizationFilter))]
@@ -124,24 +142,20 @@ namespace api_ecommerce_v1.Controllers
             var category = _categoryService.eliminarCategory(categoryId);
             if (!category)
             {
-                // Crear un objeto JSON personalizado para el mensaje de error
                 var errorResponse = new
                 {
                     mensaje = "Category no encontrada."
                 };
 
-                // Serializar el objeto JSON y devolverlo con una respuesta HTTP 404 (NotFound)
                 var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                 return NotFound(jsonResponse);
             }
 
-            // Crear un objeto JSON personalizado para el mensaje de éxito
             var successResponse = new
             {
                 mensaje = "Category eliminada exitosamente."
             };
 
-            // Serializar el objeto JSON y devolverlo con una respuesta HTTP 200 (OK)
             var successJsonResponse = JsonConvert.SerializeObject(successResponse);
             return Ok(successJsonResponse);
         }
