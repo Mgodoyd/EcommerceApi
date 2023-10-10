@@ -26,6 +26,9 @@ namespace api_ecommerce_v1.Services
         // Método para obtener el total de ventas cualquier estado
         int ObtenerTotaldeSalesGeneral();
 
+        //Método para obtener el total de ventas estado cancelado
+        int ObtenerTotaldeSalesCancelado();
+
         // Método para obtener la cantidad de ventas totales
         int ObtenerTotaldeSalesTotal(); 
 

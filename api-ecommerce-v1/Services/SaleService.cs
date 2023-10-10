@@ -52,13 +52,22 @@ namespace api_ecommerce_v1.Services
         */
         public int ObtenerTotaldeSalesGeneral()
         {
-            var sales = _context.Sales.ToList();
-            var total = 0;
+            var total = _context.Sales
+                .Where(s => s.state != "Cancelado")
+                .Sum(s => s.subtotal);
 
-            foreach (var sale in sales)
-            {
-                total += sale.subtotal;
-            }
+            return total;
+        }
+
+
+        /*
+          * Método para obtener el total de ventas estado cancelado
+          */
+        public int ObtenerTotaldeSalesCancelado()
+        {
+            var total = _context.Sales
+                 .Where(s => s.state == "Cancelado")
+                 .Sum(s => s.subtotal);
 
             return total;
         }

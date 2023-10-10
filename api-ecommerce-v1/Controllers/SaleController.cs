@@ -43,7 +43,12 @@ namespace api_ecommerce_v1.Controllers
             {
                 var sales = _saleService.ObtenerTodoslasSale();
 
-                var serializedData = JsonConvert.SerializeObject(sales);
+                var settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                };
+
+                var serializedData = JsonConvert.SerializeObject(sales, settings);
                 var cacheOptions = new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
@@ -54,6 +59,7 @@ namespace api_ecommerce_v1.Controllers
                 return Ok(sales);
             }
         }
+
 
         /*
          *  Obtenemos una venta por su id
@@ -107,37 +113,45 @@ namespace api_ecommerce_v1.Controllers
         [HttpGet("totalVendido")]
         public IActionResult GetTotalSales()
         {
-            var cachedTotalSales = _distributedCache.GetString("TotalSales");
+            //var cachedTotalSales = _distributedCache.GetString("TotalSales");
 
-            if (cachedTotalSales != null)
+            var totalSales = _saleService.ObtenerTotaldeSalesGeneral();
+            var totalCancelado = _saleService.ObtenerTotaldeSalesCancelado();
+
+            if (totalSales != null || totalCancelado != null)
             {
-                var totalSales = JsonConvert.DeserializeObject<decimal>(cachedTotalSales);
+              /*  var totalSales = JsonConvert.DeserializeObject<decimal>(cachedTotalSales);
+                var totalCancelado = _saleService.ObtenerTotaldeSalesCancelado();*/
                 var response = new
                 {
                     Message = "Total vendido:",
-                    TotalVentas = totalSales
+                    TotalVentas = totalSales,
+                    TotalCancelado = totalCancelado
                 };
                 return Ok(response);
             }
-            else
-            {
-                var totalSales = _saleService.ObtenerTotaldeSalesGeneral();
-                var serializedTotalSales = JsonConvert.SerializeObject(totalSales);
+            /* else
+             {
+                 var totalSales = _saleService.ObtenerTotaldeSalesGeneral();
+                 var totalCancelado = _saleService.ObtenerTotaldeSalesCancelado();
+                 var serializedTotalSales = JsonConvert.SerializeObject(totalSales);
 
-                var cacheOptions = new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
-                };
+                 var cacheOptions = new DistributedCacheEntryOptions
+                 {
+                     AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
+                 };
 
-                _distributedCache.SetString("TotalSales", serializedTotalSales, cacheOptions);
+                 _distributedCache.SetString("TotalSales", serializedTotalSales, cacheOptions);
 
-                var response = new
-                {
-                    Message = "Total vendido:",
-                    TotalVentas = totalSales
-                };
-                return Ok(response);
-            }
+                 var response = new
+                 {
+                     Message = "Total vendido:",
+                     TotalVentas = totalSales,
+                     TotalCancelado = totalCancelado
+                 };
+                 return Ok(response);
+             }*/
+            return null;
         }
 
         /*
@@ -249,8 +263,12 @@ namespace api_ecommerce_v1.Controllers
                     var jsonResponse = JsonConvert.SerializeObject(errorResponse);
                     return NotFound(jsonResponse);
                 }
+                var settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                };
 
-                var serializedSales = JsonConvert.SerializeObject(sales);
+                var serializedSales = JsonConvert.SerializeObject(sales, settings);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
