@@ -35,7 +35,7 @@ namespace api_ecommerce_v1.Controllers
         [HttpGet("{galeryId}")]
         public IActionResult GetGaleryById(int galeryId)
         {
-            var cacheKey = $"GaleryAll";
+           /* var cacheKey = $"GaleryAll{galeryId}";
             var cachedGalery = _distributedCache.GetString(cacheKey);
 
             if (cachedGalery != null)
@@ -44,7 +44,7 @@ namespace api_ecommerce_v1.Controllers
                 return Ok(galery);
             }
             else
-            {
+            {*/
                 var galery = _galeryService.ObtenerGaleryPorProductId(galeryId);
 
                 if (galery == null)
@@ -58,15 +58,15 @@ namespace api_ecommerce_v1.Controllers
                     return NotFound(jsonResponse);
                 }
 
-                var serializedGalery = JsonConvert.SerializeObject(galery);
+             /*   var serializedGalery = JsonConvert.SerializeObject(galery);
                 var cacheEntryOptions = new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
                 };
-                _distributedCache.SetString(cacheKey, serializedGalery, cacheEntryOptions);
+                _distributedCache.SetString(cacheKey, serializedGalery, cacheEntryOptions);*/
 
                 return Ok(galery);
-            }
+            //}
         }
 
         /*
@@ -88,8 +88,8 @@ namespace api_ecommerce_v1.Controllers
 
             var galeryCreada = _galeryService.CrearGalery(galery);
 
-            var cacheKey = $"GaleryAll";
-            _distributedCache.Remove(cacheKey);
+           /* var cacheKey = $"GaleryAll{galeryCreada.Id}";
+            _distributedCache.Remove(cacheKey);*/
 
             return Ok(galeryCreada);
         }

@@ -290,6 +290,9 @@ namespace api_ecommerce_v1.Controllers
             var cacheKey = "SalesData";
             _distributedCache.Remove(cacheKey);
 
+            var cachekey3 = "TotalSalesCompletado";
+            _distributedCache.Remove(cachekey3);
+
             if (sale.userId != null)
             {
                 var cacheKey2 = $"SalesByUserId_{sale.userId}";
@@ -321,6 +324,9 @@ namespace api_ecommerce_v1.Controllers
 
             var cacheKey = "SalesData";
             _distributedCache.Remove(cacheKey);
+
+            var cachekey3 = "TotalSalesCompletado";
+            _distributedCache.Remove(cachekey3);
 
             if (sale.userId != null)
             {

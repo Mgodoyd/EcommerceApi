@@ -69,8 +69,8 @@ namespace api_ecommerce_v1.Services
 
             _context.Galery.Remove(galeryExistente);
 
-            var cacheKey = $"GaleryAll";
-            _distributedCache.Remove(cacheKey);
+           /* var cacheKey = $"GaleryAll{galeryExistente.Id}";
+            _distributedCache.Remove(cacheKey);*/
             _context.SaveChanges();
 
             return true;

@@ -16,9 +16,10 @@ namespace api_ecommerce_v1.Models
 
 
             [Required(ErrorMessage = "El campo 'dpi' es requerido.")]
-            public int? dpi { get; set; }
+            [StringLength(16, MinimumLength = 16, ErrorMessage = "El campo 'dpi' debe tener exactamente 16 caracteres.")]
+            public string dpi { get; set; }
 
-
+    
             [Required(ErrorMessage = "El campo 'zip' es requerido.")]
             [RegularExpression(@"^\d+$", ErrorMessage = "El campo 'zip' debe ser un número.")]
             public int zip { get; set; }

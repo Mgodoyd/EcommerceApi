@@ -44,9 +44,10 @@ namespace api_ecommerce_v1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("dpi")
+                    b.Property<string>("dpi")
                         .IsRequired()
-                        .HasColumnType("int");
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
 
                     b.Property<bool>("main")
                         .HasColumnType("bit");

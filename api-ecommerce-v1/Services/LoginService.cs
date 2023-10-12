@@ -54,7 +54,7 @@ namespace api_ecommerce_v1.Services
         {
             var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
 
-            var expiration = DateTime.UtcNow.AddSeconds(3600);
+            var expiration = DateTime.UtcNow.AddSeconds(3600); //3600
 
             var claimsList = new List<Claim>
             {

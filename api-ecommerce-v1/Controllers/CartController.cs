@@ -191,12 +191,12 @@ namespace api_ecommerce_v1.Controllers
            /* var cacheKey = $"AllCartByUserId{newCart.userId}";
             _distributedCache.Remove(cacheKey);*/
 
-            /*_distributedCache.Remove(cacheKey);
+            /*_distributedCache.Remove(cacheKey);*/
 
             var cacheKey2 = "AllCarts";
             _distributedCache.Remove(cacheKey2);
 
-            var cacheKey3 = $"CartById_{newCart.Id}";
+          /*  var cacheKey3 = $"CartById_{newCart.Id}";
             _distributedCache.Remove(cacheKey3);*/
 
             return CreatedAtAction(nameof(GetCartById), new { id = newCart.Id }, newCart);
