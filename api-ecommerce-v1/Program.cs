@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 //Conexion db
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer("name=ConnectionStrings:azureDBConnect"));
-
+//Conexion Redis
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration["RedisConnectionStrin"];
@@ -20,8 +20,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 
 
-// Add services to the container.
-
+// Servicios
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
@@ -47,6 +46,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:key"]))
     };
 });
+
+//Acceso a Cors
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
